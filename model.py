@@ -1,4 +1,4 @@
-from flask_sqlalchemy import flask_sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 
 #Instantiate a SQLAlchemy object to create db.Model classes
 db = SQLAlchemy()
