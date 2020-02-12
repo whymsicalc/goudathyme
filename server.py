@@ -3,6 +3,7 @@ from model import connect_to_db, db, User, Ingredient, Item
 from jinja2 import StrictUndefined
 import os
 import psycopg2
+from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
@@ -11,7 +12,6 @@ app.secret_key = SECRET_KEY
 @app.route("/")
 def homepage():
     """Show homepage."""
-
     return render_template("index.html")
 
 
@@ -33,6 +33,7 @@ def login_page():
             session["username"] = username
             flash("Successfully logged in!")
             return redirect("/")
+            # return redirect(f"/my-items/{user.user_id}")
         else:
             flash("Incorrect password, please try again.")
             return redirect("/login")
@@ -71,9 +72,26 @@ def register_user():
         return redirect("/login")
 
 
+@app.route("/logout")
+def logout_user():
+    """Log user out of current session."""
+    # if session["username"]:
+    del session["username"]
+    flash("Successfully logged out!")
+    return redirect("/")
+
+# @app.route("/my-items/<int: user_id>")
+# def show_main_item_page(user_id):
+#     """Show main page for users to add items and see list of what they currently have."""
+#     user = User.query.filter_by(user_id=user_id).first()
+
 
 if __name__ == "__main__":
-    connect_to_db(app)
     app.debug = True
     app.jinja_env.auto_reload = app.debug
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+    connect_to_db(app)
+    # Use the DebugToolbar
+    DebugToolbarExtension(app)
     app.run(host="0.0.0.0")
+

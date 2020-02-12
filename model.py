@@ -39,6 +39,7 @@ class Ingredient(db.Model):
 
     ing_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
+    api_id = db.Column(db.Integer, nullable=True)
     # Considering adding more columns, but not sure what
     # else I need to add yet!
 
