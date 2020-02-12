@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Welcome to More Thyme!</h1>
+<h3>Sign In</h3>
+<form action="/login" method="POST">
+    <input name="username" placeholder="User Name"><br>
+    <input name="password" type="password" placeholder="Password"><br>
+    <!-- eventually implement a forgot password? -->
+    <button type="submit">Sign In</button>
+</form>
+<br>
+<h4>No account?</h4>
+<form action="/register">
+<button type="submit">Create an Account</button>
+</form>
+
+{% endblock %}
