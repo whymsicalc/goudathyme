@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 #Instantiate a SQLAlchemy object to create db.Model classes
 db = SQLAlchemy()
@@ -9,16 +10,26 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password_hash = db.Column(db.String(100), nullable=False)
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100))
+    phone = db.Column(db.String(16))
 
     # Association with items table created in Item
 
     def __repr__(self):
         """Return a readable representation of a Human."""
-        return f"<{self.fname} {self.lname}: id={user_id}, username={username}>"
+        return f"<{self.fname} {self.lname}: id={self.user_id}, username={self.username}>"
+
+    def set_password(self, password):
+        """Use werkzeug.security's password_hash to securely save password."""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Check if password given matches hashed password."""
+        return check_password_hash(self.password_hash, password)
 
 
 class Ingredient(db.Model):
