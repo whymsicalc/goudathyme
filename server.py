@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, flash, session
+from flask import Flask, render_template, redirect, request, flash, session, jsonify
 from model import connect_to_db, db, User, Ingredient, Item
 from jinja2 import StrictUndefined
 import os
@@ -36,7 +36,7 @@ def login_page():
     user = User.query.filter_by(username=username).first()
     if user:
         if user.check_password(password):
-            session["username"] = username
+            session["user_id"] = user.user_id
             flash("Successfully logged in!")
             return redirect(f"/my-items/{user.user_id}")
         else:
@@ -80,13 +80,14 @@ def register_user():
 @app.route("/logout")
 def logout_user():
     """Log user out of current session."""
-    if session.get("username") != None:
-        del session["username"]
+    if session.get("user_id") != None:
+        del session["user_id"]
         flash("Successfully logged out!")
         return redirect("/")
     else:
         flash("You're not currently logged in!")
         return redirect("/")
+
 
 @app.route("/my-items/<int:user_id>")
 def show_main_item_page(user_id):
@@ -96,14 +97,28 @@ def show_main_item_page(user_id):
     return render_template("/my_items.html", user=user, ingredients=ingredients)
 
 
-@app.route("/my-items/<int:user_id>", methods=["POST"])
-def update_items(user_id):
-    """Update users items in database."""
-    new_item = session.form.get("ingredient")
+@app.route("/add-to-kitchen", methods=["POST"])
+def add_items():
+    """Add ingredients to items table in database."""
+    # Get items saved in "ingredients[]" from my_items.html in list form
+    items = request.form.getlist("ingredients[]")
+    items_json =[]
+    # Loop over each item user selected and create Item instance to add to items table
+    for item in items:
+        new_item = Item(user_id=session["user_id"], ing_id=int(item))
+        db.session.add(new_item)
+        db.session.commit()
 
-    # Need to add to database (considerations -- if it exists already, link it)
-    
-    return redirect("/")
+        # Append information in a dictionary we need to access in my_items.html to items_json
+        items_json.append({"item_id": new_item.item_id,
+                    "ingredient_name": new_item.ingredients.name,
+                    "expiration_date": new_item.expiration_date,
+                    "running_low": new_item.running_low,
+                    "notes": new_item.notes
+                    })
+
+    return jsonify(items_json)
+
 
 if __name__ == "__main__":
     app.debug = True

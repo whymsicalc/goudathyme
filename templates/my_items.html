@@ -7,36 +7,55 @@
   crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-
-
-<!-- NEED TO MOVE THIS TO A JS FILE -->
-
-
 {% endblock %}
 
 {% block content %}
 <h1>Hello there, {{user.fname}}!</h1>
 <h4>This is what you have logged in your kitchen so far:</h4>
 <ul>
+    <div id="current-ings">
     {% for item in user.items %}
     <li>{{item.ingredients.name}}</li>
     {% endfor %}
+    </div>
 </ul>
 
 <h4>What else is in your kitchen?</h4>
-<form action="/my-items/{{user.user_id}}"method="POST">
+<form id="add-to-kitchen" action="/add-to-kitchen" method="POST">
     Enter Item:<br>
-    <select id="new-ingredient" class="form-control" name="ingredient">
+    <select class="new-ingredient form-control" name="ingredients[]" multiple="multiple" id="to-add">
         {% for ingredient in ingredients %}
-        <option value={ingredient.ing_id}>{{ingredient.name}}</option>
+        <option value={{ingredient.ing_id}}>{{ingredient.name}}</option>
         {% endfor %}
     </select>
 
     <button type="submit">Add Ingredient!</button>
+</form><br>
+<!-- <script src="JAVASCRIPT LOCATION"></script>
+ -->
+ <script>
+    $('#add-to-kitchen').on('submit', (evt) => {
+      evt.preventDefault();
+
+      const formInputs = $(`#to-add`).serialize();
+      
+      $.post('/add-to-kitchen', formInputs, (res) => {
+        for (const item of res){
+            $('#current-ings').append(`<li>${item.ingredient_name}</li>`);
+      }});
+    });
+</script>
+
+<h5>Didn't find your item in our database? Add item here! (You will still need to add it to your personal kitchen afterwards.)</h5>
+<form action="/add-to-database" method="POST">
+    <input type="text" name="name"><br>
+    <button type="submit" id="add_item">Add item to database</button>
 </form>
+<!-- <script src="JAVASCRIPT LOCATION"></script>
+ -->
 <script>
     $(document).ready(function() {
-    $('#new-ingredient').select2();
+    $('.new-ingredient').select2();
     });
     // $('submit').on('click', (evt) => {
 
