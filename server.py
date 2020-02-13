@@ -3,11 +3,17 @@ from model import connect_to_db, db, User, Ingredient, Item
 from jinja2 import StrictUndefined
 import os
 import psycopg2
+
+# Delete these two when app is ready to go
 from flask_debugtoolbar import DebugToolbarExtension
+from jinja2 import StrictUndefined
+
 
 app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
 app.secret_key = SECRET_KEY
+
+app.jinja_env.undefined = StrictUndefined
 
 @app.route("/")
 def homepage():
@@ -32,8 +38,7 @@ def login_page():
         if user.check_password(password):
             session["username"] = username
             flash("Successfully logged in!")
-            return redirect("/")
-            # return redirect(f"/my-items/{user.user_id}")
+            return redirect(f"/my-items/{user.user_id}")
         else:
             flash("Incorrect password, please try again.")
             return redirect("/login")
@@ -65,7 +70,7 @@ def register_user():
         db.session.commit()
 
         flash("Successfully created an account!")
-        return redirect("/")
+        return redirect(f"/my-items/{new_user.user_id}")
 
     else:
         flash("User already exists! Try logging in instead.")
@@ -75,20 +80,35 @@ def register_user():
 @app.route("/logout")
 def logout_user():
     """Log user out of current session."""
-    # if session["username"]:
-    del session["username"]
-    flash("Successfully logged out!")
+    if session.get("username") != None:
+        del session["username"]
+        flash("Successfully logged out!")
+        return redirect("/")
+    else:
+        flash("You're not currently logged in!")
+        return redirect("/")
+
+@app.route("/my-items/<int:user_id>")
+def show_main_item_page(user_id):
+    """Show main page for users to add items and see list of what they currently have."""
+    user = User.query.filter_by(user_id=user_id).first()
+    ingredients = Ingredient.query.all()
+    return render_template("/my_items.html", user=user, ingredients=ingredients)
+
+
+@app.route("/my-items/<int:user_id>", methods=["POST"])
+def update_items(user_id):
+    """Update users items in database."""
+    new_item = session.form.get("ingredient")
+
+    # Need to add to database (considerations -- if it exists already, link it)
+    
     return redirect("/")
-
-# @app.route("/my-items/<int: user_id>")
-# def show_main_item_page(user_id):
-#     """Show main page for users to add items and see list of what they currently have."""
-#     user = User.query.filter_by(user_id=user_id).first()
-
 
 if __name__ == "__main__":
     app.debug = True
     app.jinja_env.auto_reload = app.debug
+    # DebugToolbar wasn't functioning correctly, so added this line to fix.
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     connect_to_db(app)
     # Use the DebugToolbar

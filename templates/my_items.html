@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script
+  src="http://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+
+<!-- NEED TO MOVE THIS TO A JS FILE -->
+
+
+{% endblock %}
+
+{% block content %}
+<h1>Hello there, {{user.fname}}!</h1>
+<h4>This is what you have logged in your kitchen so far:</h4>
+<ul>
+    {% for item in user.items %}
+    <li>{{item.ingredients.name}}</li>
+    {% endfor %}
+</ul>
+
+<h4>What else is in your kitchen?</h4>
+<form action="/my-items/{{user.user_id}}"method="POST">
+    Enter Item:<br>
+    <select id="new-ingredient" class="form-control" name="ingredient">
+        {% for ingredient in ingredients %}
+        <option value={ingredient.ing_id}>{{ingredient.name}}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Add Ingredient!</button>
+</form>
+<script>
+    $(document).ready(function() {
+    $('#new-ingredient').select2();
+    });
+    // $('submit').on('click', (evt) => {
+
+    // });
+</script>
+{% endblock %}

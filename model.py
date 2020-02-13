@@ -64,7 +64,7 @@ class Item(db.Model):
 
     # Create relationship between users table and ingredients table
     ingredients = db.relationship("Ingredient", backref="items")
-    users = db.relationship("User", backref="users")
+    users = db.relationship("User", backref="items")
 
     def __repr__(self):
         """Return a readable representation of an Item in kitchens."""
