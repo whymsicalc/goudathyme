@@ -105,17 +105,18 @@ def add_items():
     items_json =[]
     # Loop over each item user selected and create Item instance to add to items table
     for item in items:
-        new_item = Item(user_id=session["user_id"], ing_id=int(item))
-        db.session.add(new_item)
-        db.session.commit()
+        if Item.query.filter_by(user_id=session["user_id"], ing_id=int(item)).first() == None:
+            new_item = Item(user_id=session["user_id"], ing_id=int(item))
+            db.session.add(new_item)
+            db.session.commit()
 
-        # Append information in a dictionary we need to access in my_items.html to items_json
-        items_json.append({"item_id": new_item.item_id,
-                    "ingredient_name": new_item.ingredients.name,
-                    "expiration_date": new_item.expiration_date,
-                    "running_low": new_item.running_low,
-                    "notes": new_item.notes
-                    })
+            # Append information in a dictionary we need to access in my_items.html to items_json
+            items_json.append({"item_id": new_item.item_id,
+                        "ingredient_name": new_item.ingredients.name,
+                        "expiration_date": new_item.expiration_date,
+                        "running_low": new_item.running_low,
+                        "notes": new_item.notes
+                        })
 
     return jsonify(items_json)
 

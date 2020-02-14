@@ -11,54 +11,64 @@
 
 {% block content %}
 <h1>Hello there, {{user.fname}}!</h1>
-<h4>This is what you have logged in your kitchen so far:</h4>
-<ul>
-    <div id="current-ings">
-    {% for item in user.items %}
-    <li>{{item.ingredients.name}}</li>
-    {% endfor %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <h4>This is what you have logged in your kitchen so far:</h4>
+            <ul>
+                <div id="current-ings">
+                {% for item in user.items %}
+                <li>{{item.ingredients.name}}</li>
+                {% endfor %}
+                </div>
+            </ul>
+        </div>
+
+        <div class="col-4">
+            <h4>What else is in your kitchen?</h4>
+            <form id="add-to-kitchen" action="/add-to-kitchen" method="POST">
+                Enter Item:<br>
+                <select class="new-ingredient form-control" name="ingredients[]" multiple="multiple" id="to-add">
+                    {% for ingredient in ingredients %}
+                    <option value={{ingredient.ing_id}}>{{ingredient.name}}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Add Ingredient!</button>
+            </form><br>
+            <!-- <script src="JAVASCRIPT LOCATION"></script>
+             -->
+             <script>
+                $('#add-to-kitchen').on('submit', (evt) => {
+                  evt.preventDefault();
+
+                  const formInputs = $(`#to-add`).serialize();
+
+                  $.post('/add-to-kitchen', formInputs, (res) => {
+                    for (const item of res){
+                        $('#current-ings').append(`<li>${item.ingredient_name}</li>`);
+                  }});
+                  // Clear select box each time user adds ingredient
+                  $(".new-ingredient").val('').trigger('change');
+                });
+            </script>
+
+            <h5>Didn't find your item in our database? Add item here! (You will still need to add it to your personal kitchen afterwards.)</h5>
+            <form action="/add-to-database" method="POST">
+                <input type="text" name="name"><br>
+                <button type="submit" id="add_item">Add item to database</button>
+            </form>
+            <!-- <script src="JAVASCRIPT LOCATION"></script>
+             -->
+            <script>
+                $(document).ready(function() {
+                $('.new-ingredient').select2();
+                });
+                // $('submit').on('click', (evt) => {
+
+                // });
+            </script>
+        </div>
     </div>
-</ul>
-
-<h4>What else is in your kitchen?</h4>
-<form id="add-to-kitchen" action="/add-to-kitchen" method="POST">
-    Enter Item:<br>
-    <select class="new-ingredient form-control" name="ingredients[]" multiple="multiple" id="to-add">
-        {% for ingredient in ingredients %}
-        <option value={{ingredient.ing_id}}>{{ingredient.name}}</option>
-        {% endfor %}
-    </select>
-
-    <button type="submit">Add Ingredient!</button>
-</form><br>
-<!-- <script src="JAVASCRIPT LOCATION"></script>
- -->
- <script>
-    $('#add-to-kitchen').on('submit', (evt) => {
-      evt.preventDefault();
-
-      const formInputs = $(`#to-add`).serialize();
-      
-      $.post('/add-to-kitchen', formInputs, (res) => {
-        for (const item of res){
-            $('#current-ings').append(`<li>${item.ingredient_name}</li>`);
-      }});
-    });
-</script>
-
-<h5>Didn't find your item in our database? Add item here! (You will still need to add it to your personal kitchen afterwards.)</h5>
-<form action="/add-to-database" method="POST">
-    <input type="text" name="name"><br>
-    <button type="submit" id="add_item">Add item to database</button>
-</form>
-<!-- <script src="JAVASCRIPT LOCATION"></script>
- -->
-<script>
-    $(document).ready(function() {
-    $('.new-ingredient').select2();
-    });
-    // $('submit').on('click', (evt) => {
-
-    // });
-</script>
+</div>
 {% endblock %}
