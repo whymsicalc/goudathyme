@@ -62,11 +62,23 @@
              -->
             <script>
                 $(document).ready(function() {
-                $('.new-ingredient').select2();
-                });
+                    $('.new-ingredient').select2({
+                      //   tags: true,
+                      // createTag: function (params) {
+                      //   // Don't offset to create a tag if there is no @ symbol
+                      //   // if (params.term.indexOf('@') === -1) {
+                      //     // Return null to disable tag creation
+                      //     // return null;
+                      //   // }
+                      //   console.log(params)
+                      //   return {
+                      //     id: params.term,
+                      //     text: params.term
+                      //   }
+                      // }
+                    });
                 // $('submit').on('click', (evt) => {
-
-                // });
+                });
             </script>
         </div>
     </div>
