@@ -1,0 +1,17 @@
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+/*tr:hover {
+    background-color: #f5f5f5;
+}*/
+
+tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+th {
+  background-color: #689FC4;
+/*  color: white;
+*/}

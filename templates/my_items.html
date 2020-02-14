@@ -7,21 +7,35 @@
   crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<link href="../static/table.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <h1>Hello there, {{user.fname}}!</h1>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-8">
+        <div class="col-8" style="overflow-x:auto;">
             <h4>This is what you have logged in your kitchen so far:</h4>
-            <ul>
-                <div id="current-ings">
-                {% for item in user.items %}
-                <li>{{item.ingredients.name}}</li>
-                {% endfor %}
-                </div>
-            </ul>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Ingredient</th>
+                          <th>Expiration Date</th>
+                          <th>Running Low</th>
+                          <th>Notes</th>
+                      </tr>
+                  </thead>
+                  <tbody id="current-ings">
+                        {% for item in user.items %}                
+                            <tr>
+                                <td>{{item.ingredients.name}}</td>
+                                <td>{{item.expiration_date}}</td>
+                                <td>{{item.running_low}}</td>
+                                <td>{{item.notes}}</td>
+                            </tr>
+                        {% endfor %}
+                  </tbody>
+              </table>
         </div>
 
         <div class="col-4">
@@ -45,8 +59,29 @@
                   const formInputs = $(`#to-add`).serialize();
 
                   $.post('/add-to-kitchen', formInputs, (res) => {
-                    for (const item of res){
-                        $('#current-ings').append(`<li>${item.ingredient_name}</li>`);
+                    console.log(res)
+                    for (const item of res) {
+                      console.log('it works');
+                      let expiration = "None";
+                      if (item.expiration_date) {
+                        expiration = item.expiration_date
+                      };
+                      let low = "None";
+                      if (item.running_low) {
+                        low = item.running_low
+                      };
+                      let notes = "None";
+                      if (item.notes) {
+                        const notes = item.notes
+                      };
+                      $('#current-ings').append(
+                          `<tr>
+                              <td>${item.ingredient_name}</td>
+                              <td>${expiration}</td>
+                              <td>${low}</td>
+                              <td>${notes}</td>
+                          </tr>`
+                          );
                   }});
                   // Clear select box each time user adds ingredient
                   $(".new-ingredient").val('').trigger('change');

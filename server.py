@@ -117,7 +117,6 @@ def add_items():
                         "running_low": new_item.running_low,
                         "notes": new_item.notes
                         })
-
     return jsonify(items_json)
 
 
