@@ -100,6 +100,7 @@ def show_main_item_page(user_id):
 @app.route("/add-to-kitchen", methods=["POST"])
 def add_items():
     """Add ingredients to items table in database."""
+    import ipdb; ipdb.set_trace()
     # Get items saved in "ingredients" from my_items.html in list form
     items = request.form.getlist("ingredients")
     items_json =[]
