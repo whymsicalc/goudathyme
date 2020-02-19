@@ -41,8 +41,7 @@
         <div class="col-4">
             <h4>What else is in your kitchen?</h4>
             <form id="add-to-kitchen" action="/add-to-kitchen" method="POST">
-                Enter Item:<br>
-                <select class="new-ingredient form-control" name="ingredients[]" multiple="multiple" id="to-add">
+                <select class="new-ingredient form-control" name="ingredients" multiple="multiple" id="to-add">
                     {% for ingredient in ingredients %}
                     <option value={{ingredient.ing_id}}>{{ingredient.name}}</option>
                     {% endfor %}
@@ -59,9 +58,7 @@
                   const formInputs = $(`#to-add`).serialize();
 
                   $.post('/add-to-kitchen', formInputs, (res) => {
-                    console.log(res)
                     for (const item of res) {
-                      console.log('it works');
                       let expiration = "None";
                       if (item.expiration_date) {
                         expiration = item.expiration_date
@@ -86,19 +83,47 @@
                   // Clear select box each time user adds ingredient
                   $(".new-ingredient").val('').trigger('change');
                 });
-            </script>
+                // Let user add new ingredient (to their list and to ingredients table)
+              $(document).ready(function() {
+                  $('.new-ingredient').select2({
+                    // Allows user to create new option if it isn't in options
+                    tags: true,
+                    placeholder: "Enter an Ingredient",
+                    // Creates new tag when "," is entered
+                    tokenSeparators: [','],
+                //       // createTag: function (params) {
+                //       //   // Don't offset to create a tag if there is no @ symbol
+                //       //   // if (params.term.indexOf('@') === -1) {
+                //       //     // Return null to disable tag creation
+                //       //     // return null;
+                //       //   // }
+                //       //   console.log(params)
+                //       //   return {
+                //       //     id: params.term,
+                //       //     text: params.term
+                //       //   }
+                //       // }
+                    createTag: function (params) {
+                      const term = $.trim(params.term);
 
-            <h5>Didn't find your item in our database? Add item here! (You will still need to add it to your personal kitchen afterwards.)</h5>
-            <form action="/add-to-database" method="POST">
-                <input type="text" name="name"><br>
-                <button type="submit" id="add_item">Add item to database</button>
-            </form>
+                      if (term === '') {
+                        return null;
+                      }
+
+                      return {
+                        id: term,
+                        text: term,
+                        newTag: true // add additional parameters
+                      }
+                    }
+                });
+                // // $('submit').on('click', (evt) => {
+              });
+            </script>
             <!-- <script src="JAVASCRIPT LOCATION"></script>
-             -->
-            <script>
-                $(document).ready(function() {
-                    $('.new-ingredient').select2({
-                      //   tags: true,
+                // $(document).ready(function() {
+                    // $('.new-ingredient').select2({
+                        // tags: true,
                       // createTag: function (params) {
                       //   // Don't offset to create a tag if there is no @ symbol
                       //   // if (params.term.indexOf('@') === -1) {
@@ -111,9 +136,9 @@
                       //     text: params.term
                       //   }
                       // }
-                    });
+                    // });
                 // $('submit').on('click', (evt) => {
-                });
+                // }); -->
             </script>
         </div>
     </div>

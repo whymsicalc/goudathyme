@@ -100,23 +100,39 @@ def show_main_item_page(user_id):
 @app.route("/add-to-kitchen", methods=["POST"])
 def add_items():
     """Add ingredients to items table in database."""
-    # Get items saved in "ingredients[]" from my_items.html in list form
-    items = request.form.getlist("ingredients[]")
+    # Get items saved in "ingredients" from my_items.html in list form
+    items = request.form.getlist("ingredients")
     items_json =[]
-    # Loop over each item user selected and create Item instance to add to items table
-    for item in items:
-        if Item.query.filter_by(user_id=session["user_id"], ing_id=int(item)).first() == None:
-            new_item = Item(user_id=session["user_id"], ing_id=int(item))
-            db.session.add(new_item)
-            db.session.commit()
+    def create_item(ing_id):
+        """Create an Item instance to add to items table."""
+        new_item = Item(user_id=session["user_id"], ing_id=ing_id)
+        db.session.add(new_item)
+        db.session.commit()
 
-            # Append information in a dictionary we need to access in my_items.html to items_json
-            items_json.append({"item_id": new_item.item_id,
-                        "ingredient_name": new_item.ingredients.name,
-                        "expiration_date": new_item.expiration_date,
-                        "running_low": new_item.running_low,
-                        "notes": new_item.notes
-                        })
+        # Append information in a dictionary we need to access in my_items.html to items_json
+        items_json.append({"item_id": new_item.item_id,
+                                "ingredient_name": new_item.ingredients.name,
+                                "expiration_date": new_item.expiration_date,
+                                "running_low": new_item.running_low,
+                                "notes": new_item.notes
+                                })
+    # Loop over each item user selected
+    for item in items:
+        if item.isdigit():
+            # Check if item exists in ingredients table
+            if Ingredient.query.filter_by(ing_id=item).first() != None:
+                # Create Item instance to add to items table if it's not in the user's kitchen yet
+                if Item.query.filter_by(user_id=session["user_id"], ing_id=int(item)).first() == None:
+                    create_item(int(item))
+
+        # If item isn't an int, it is something the user wrote in:
+        else:
+            # Create new Ingredient
+            new_ing = Ingredient(name=item)
+            db.session.add(new_ing)
+            db.session.commit()
+            create_item(new_ing.ing_id)
+
     return jsonify(items_json)
 
 
