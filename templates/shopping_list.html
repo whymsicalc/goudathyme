@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link href="../static/table.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<h3>Grocery List:</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Ingredient</th>
+            <th>Running Low</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in low_ingredients %}
+            <tr>
+                <td>{{item.ingredients.name}}</td>
+                <td>{{item.running_low}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

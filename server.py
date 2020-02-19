@@ -94,13 +94,12 @@ def show_main_item_page(user_id):
     """Show main page for users to add items and see list of what they currently have."""
     user = User.query.filter_by(user_id=user_id).first()
     ingredients = Ingredient.query.all()
-    return render_template("/my_items.html", user=user, ingredients=ingredients)
+    return render_template("my_items.html", user=user, ingredients=ingredients)
 
 
 @app.route("/add-to-kitchen", methods=["POST"])
 def add_items():
-    """Add ingredients to items table in database."""
-    import ipdb; ipdb.set_trace()
+    """Add ingredients to items table in database. If ingredient isn't already in ingredients table, also add to ingredients table."""
     # Get items saved in "ingredients" from my_items.html in list form
     items = request.form.getlist("ingredients")
     items_json =[]
@@ -135,6 +134,15 @@ def add_items():
             create_item(new_ing.ing_id)
 
     return jsonify(items_json)
+
+
+@app.route("/shopping-list/<int:user_id>")
+def show_shopping_list(user_id):
+    """Show list of items that user has marked as running low."""
+    # import ipdb; ipdb.set_trace()
+    user = User.query.filter_by(user_id=user_id).first()
+    low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True)
+    return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
 
 
 if __name__ == "__main__":
