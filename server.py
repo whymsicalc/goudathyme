@@ -136,6 +136,18 @@ def add_items():
     return jsonify(items_json)
 
 
+@app.route("/update-kitchen", methods=["POST"])
+def update_items():
+    """Update items in database with information given by user."""
+    date = request.form.get("date")
+    low = request.form.get("low")
+    notes = request.form.get("notes")
+    print(date)
+    print(low)
+    print(notes)
+    return
+
+
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
