@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<script
-  src="http://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link href="../static/table.css" rel="stylesheet">
 {% endblock %}
 
@@ -16,6 +13,7 @@
     <div class="row">
         <div class="col-8" style="overflow-x:auto;">
             <h4>This is what you have logged in your kitchen so far:</h4>
+            <form id="update-kitchen" action="/update-kitchen" method="POST">
               <table>
                   <thead>
                       <tr>
@@ -23,6 +21,7 @@
                           <th>Expiration Date</th>
                           <th>Running Low</th>
                           <th>Notes</th>
+                          <th>Actions</th>
                       </tr>
                   </thead>
                   <tbody id="current-ings">
@@ -32,10 +31,16 @@
                                 <td>{{item.expiration_date}}</td>
                                 <td>{{item.running_low}}</td>
                                 <td>{{item.notes}}</td>
+                                <td>
+                                  <button type="submit" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
+                                  <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
+                                  <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                                </td>
                             </tr>
                         {% endfor %}
                   </tbody>
               </table>
+            </form>
         </div>
 
         <div class="col-4">
@@ -77,6 +82,11 @@
                               <td>${expiration}</td>
                               <td>${low}</td>
                               <td>${notes}</td>
+                              <td>
+                                <a class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></a>
+                                <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
+                                <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                              </td>
                           </tr>`
                           );
                   }});
@@ -117,30 +127,45 @@
                       }
                     }
                 });
-                // // $('submit').on('click', (evt) => {
-              });
-            </script>
-            <!-- <script src="JAVASCRIPT LOCATION"></script>
-                // $(document).ready(function() {
-                    // $('.new-ingredient').select2({
-                        // tags: true,
-                      // createTag: function (params) {
-                      //   // Don't offset to create a tag if there is no @ symbol
-                      //   // if (params.term.indexOf('@') === -1) {
-                      //     // Return null to disable tag creation
-                      //     // return null;
-                      //   // }
-                      //   console.log(params)
-                      //   return {
-                      //     id: params.term,
-                      //     text: params.term
-                      //   }
-                      // }
-                    // });
                 // $('submit').on('click', (evt) => {
-                // }); -->
+              });
+            $(document).ready(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+            })
+            $(document).ready(function(){
+                // Edit row on edit button click
+                $(document).on("click", ".edit", function(){
+                    $(this).parents("tr").find("td:nth-child(2)").each(function(){
+                        $(this).html('<input type="date" id="date" class="form-control" value="' + $(this).text() + '">');
+                    });
+                    $(this).parents("tr").find("td:nth-child(3)").each(function(){
+                        $(this).html('<input type="checkbox" id="low" value="' + $(this).text() + '" >');
+                    });
+                    $(this).parents("tr").find("td:nth-child(4)").each(function(){
+                        $(this).html('<input type="text" id="notes" class="form-control" value="' + $(this).text() + '">');
+                    });     
+                    $(this).parents("tr").find(".add, .edit").toggle();
+                });
+                // Delete row on delete button click
+                $(document).on("click", ".delete", function(){
+                    $(this).parents("tr").remove();
+                });
+            });
+            // $('#update-kitchen').on('submit', (evt) => {
+            //       evt.preventDefault();
+
+            //        const formInputs = {
+            //           'date': $('#date').val(),
+            //           'low': $('#low').val(),
+            //           'notes': $('notes').val()
+            //         };
+
+            //       $.post('/update-kitchen', formInputs, (res) => {
+            //         for (const item of res) {
+                      
+            //       }});
             </script>
-        </div>
+            </div>
     </div>
 </div>
 {% endblock %}
