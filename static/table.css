@@ -15,3 +15,25 @@ th {
   background-color: #689FC4;
 /*  color: white;
 */}
+
+a.add {
+    color: #57C491;
+}
+a.edit {
+    color: #6EC457;
+}
+a.delete {
+    color: #B23B12;
+}
+i {
+    font-size: 19px;
+}
+a.add i {
+    font-size: 24px;
+    margin-right: -1px;
+    position: relative;
+    top: 3px;
+}    
+.add {
+    display: none;
+}
