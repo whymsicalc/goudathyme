@@ -162,6 +162,15 @@ def update_items():
     return jsonify(items_json)
 
 
+@app.route("/delete-row", methods=["POST"])
+def delete_row():
+    """Delete item in database with information from given row."""
+    item_id = request.form.get("item_id")
+    item = Item.query.filter_by(item_id=item_id).first()
+    db.session.delete(item)
+    db.session.commit()
+
+
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
