@@ -25,14 +25,14 @@
                       </tr>
                   </thead>
                   <tbody id="current-ings">
-                        {% for item in user.items %}                
-                            <tr>
+                        {% for item in user.items %}
+                            <tr data-item_id="{{item.item_id}}">
                                 <td>{{item.ingredients.name}}</td>
                                 <td>{{item.expiration_date}}</td>
                                 <td>{{item.running_low}}</td>
                                 <td>{{item.notes}}</td>
                                 <td>
-                                  <button type="submit" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
+                                  <button type="button" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
                                   <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
                                   <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
                                 </td>
@@ -76,7 +76,7 @@
                       if (item.notes) {
                         const notes = item.notes
                       };
-                      $('#current-ings').append(
+                      $('#current-ings').append(c
                           `<tr>
                               <td>${item.ingredient_name}</td>
                               <td>${expiration}</td>
@@ -136,10 +136,11 @@
                 // Edit row on edit button click
                 $(document).on("click", ".edit", function(){
                     $(this).parents("tr").find("td:nth-child(2)").each(function(){
-                        $(this).html('<input type="date" id="date" class="form-control" value="' + $(this).text() + '">');
+                        $(this).html('<input type="date" id="date" class="form-control" value="' + $(this).val() + '">');
                     });
                     $(this).parents("tr").find("td:nth-child(3)").each(function(){
-                        $(this).html('<input type="checkbox" id="low" value="' + $(this).text() + '" >');
+                        $(this).html('<input type="checkbox" id="low" ' + 
+                          (($(this).text() === "True") ? 'checked' : '') + '>');
                     });
                     $(this).parents("tr").find("td:nth-child(4)").each(function(){
                         $(this).html('<input type="text" id="notes" class="form-control" value="' + $(this).text() + '">');
@@ -151,19 +152,21 @@
                     $(this).parents("tr").remove();
                 });
             });
-            // $('#update-kitchen').on('submit', (evt) => {
-            //       evt.preventDefault();
+            $('#update-kitchen button').on('click', (evt) => {
+                  evt.preventDefault();
+                  const row = $(evt.target).parents("tr");
+                   const formInputs = {
+                      'item_id': row.data('item_id'),
+                      'date': row.find('#date').val(),
+                      'low': row.find('#low').is(':checked'),
+                      'notes': row.find('#notes').val()
+                    };
 
-            //        const formInputs = {
-            //           'date': $('#date').val(),
-            //           'low': $('#low').val(),
-            //           'notes': $('notes').val()
-            //         };
-
-            //       $.post('/update-kitchen', formInputs, (res) => {
-            //         for (const item of res) {
+                  $.post('/update-kitchen', formInputs, (res) => {})
+                  //   for (const item of res) {
                       
-            //       }});
+                  // }
+                });
             </script>
             </div>
     </div>
