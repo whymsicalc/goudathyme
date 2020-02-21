@@ -139,13 +139,27 @@ def add_items():
 @app.route("/update-kitchen", methods=["POST"])
 def update_items():
     """Update items in database with information given by user."""
+    item_id = request.form.get("item_id")
     date = request.form.get("date")
     low = request.form.get("low")
+    if low == "true":
+        low = True;
+    elif low == "false":
+        low = False;
     notes = request.form.get("notes")
-    print(date)
-    print(low)
-    print(notes)
-    return
+    item = Item.query.filter_by(item_id=item_id).first()
+    item.expiration_date = date
+    item.running_low = low
+    item.notes = notes
+
+    db.session.commit()
+
+    items_json = {"ingredient_name": item.ingredients.name,
+                                "expiration_date": item.expiration_date,
+                                "running_low": item.running_low,
+                                "notes": item.notes
+                                }
+    return jsonify(items_json)
 
 
 @app.route("/shopping-list/<int:user_id>")
