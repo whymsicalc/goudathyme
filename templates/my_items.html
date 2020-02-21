@@ -77,15 +77,15 @@
                         const notes = item.notes
                       };
                       $('#current-ings').append(
-                          `<tr>
+                          `<tr data-item_id="${item.item_id}"">
                               <td>${item.ingredient_name}</td>
                               <td>${expiration}</td>
                               <td>${low}</td>
                               <td>${notes}</td>
                               <td>
-                                <a class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></a>
-                                <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
-                                <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                                <button type="button" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
+                                  <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
+                                  <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
                               </td>
                           </tr>`
                           );
@@ -136,9 +136,16 @@
                     $(this).parents("tr").find(".add, .edit").toggle();
                 });
                 // Delete row on delete button click
-                $(document).on("click", ".delete", function(){
-                    $(this).parents("tr").remove();
-                });
+                $(document).on("click", ".delete", (evt) => {
+                    const row = $(evt.target).parents("tr");
+                    console.log(row);
+                    console.log(row.data('item_id'));
+                    const formInputs = {
+                      'item_id': row.data('item_id')
+                    };
+                    row.remove();
+                    $.post('/delete-row', formInputs);
+                    })
             });
 
             $('#update-kitchen button').on('click', (evt) => {
@@ -161,7 +168,7 @@
                     row.find("td:nth-child(4)").each(function(){
                         $(this).html(res.notes);
                       });
-                  })
+                  });
                 });
             </script>
             </div>
