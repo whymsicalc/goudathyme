@@ -148,7 +148,8 @@ def update_items():
         low = False;
     notes = request.form.get("notes")
     item = Item.query.filter_by(item_id=item_id).first()
-    item.expiration_date = date
+    if len(date) != 0:
+        item.expiration_date = date
     item.running_low = low
     item.notes = notes
 
@@ -169,6 +170,8 @@ def delete_row():
     item = Item.query.filter_by(item_id=item_id).first()
     db.session.delete(item)
     db.session.commit()
+    # Code kept erroring without a return line, so returning an empty list
+    return jsonify([])
 
 
 @app.route("/shopping-list/<int:user_id>")
