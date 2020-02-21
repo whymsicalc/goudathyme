@@ -7,20 +7,30 @@
 
 {% block content %}
 <h3>Grocery List:</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Ingredient</th>
-            <th>Running Low</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in low_ingredients %}
+<form id="update-groceries" action="/update-groceries" method="POST">
+    <table>
+        <thead>
             <tr>
-                <td>{{item.ingredients.name}}</td>
-                <td>{{item.running_low}}</td>
+                <th>Ingredient</th>
+                <th>Running Low</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for item in low_ingredients %}
+                <tr>
+                    <td>{{item.ingredients.name}}</td>
+                    <td style="text-align:center;">
+                        {% if item.running_low == true %}
+                        <input type="checkbox" checked>
+                        {% else %}
+                        <input type="checkbox">
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit">Update Kitchen</button>
+</form>
 {% endblock %}
+
