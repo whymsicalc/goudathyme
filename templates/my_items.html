@@ -138,17 +138,15 @@
                 // Delete row on delete button click
                 $(document).on("click", ".delete", (evt) => {
                     const row = $(evt.target).parents("tr");
-                    console.log(row);
-                    console.log(row.data('item_id'));
                     const formInputs = {
                       'item_id': row.data('item_id')
                     };
                     row.remove();
-                    $.post('/delete-row', formInputs);
+                    $.post('/delete-row', formInputs, (res) => {});
                     })
             });
 
-            $('#update-kitchen button').on('click', (evt) => {
+            $('#update-kitchen').on('click', 'button.add', (evt) => {
                   evt.preventDefault();
                   const row = $(evt.target).parents("tr");
                    const formInputs = {
@@ -160,14 +158,15 @@
 
                   $.post('/update-kitchen', formInputs, (res) => {
                     row.find("td:nth-child(2)").each(function(){
-                        $(this).html(res.expiration_date);
+                        $(this).html((res.expiration_date == null) ? 'None':res.expiration_date);
                       });
                     row.find("td:nth-child(3)").each(function(){
-                        $(this).html((res.running_low));
+                        $(this).html((res.running_low == true) ? 'True':'False');
                       });
                     row.find("td:nth-child(4)").each(function(){
                         $(this).html(res.notes);
                       });
+                    row.find(".add, .edit").toggle();
                   });
                 });
             </script>
