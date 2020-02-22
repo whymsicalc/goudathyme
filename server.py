@@ -68,7 +68,7 @@ def register_user():
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
-
+        session["user_id"] = new_user.user_id
         flash("Successfully created an account!")
         return redirect(f"/my-items/{new_user.user_id}")
 
@@ -92,6 +92,9 @@ def logout_user():
 @app.route("/my-items/<int:user_id>")
 def show_main_item_page(user_id):
     """Show main page for users to add items and see list of what they currently have."""
+    if session.get("user_id") == None:
+        flash("You're not currently logged in!")
+        return redirect("/login")
     user = User.query.filter_by(user_id=user_id).first()
     ingredients = Ingredient.query.all()
     return render_template("my_items.html", user=user, ingredients=ingredients)
@@ -143,9 +146,9 @@ def update_items():
     date = request.form.get("date")
     low = request.form.get("low")
     if low == "true":
-        low = True;
+        low = True
     elif low == "false":
-        low = False;
+        low = False
     notes = request.form.get("notes")
     item = Item.query.filter_by(item_id=item_id).first()
     if len(date) != 0:
@@ -174,10 +177,31 @@ def delete_row():
     return jsonify([])
 
 
+@app.route("/update-groceries", methods=["POST"])
+def update_running_low():
+    """Update running_low for items in database."""
+    item_id = request.form.get("item_id")
+    low = request.form.get("low")
+    if low == "true":
+        low = True
+    elif low == "false":
+        low = False
+    item = Item.query.filter_by(item_id=item_id).first()
+    item.running_low = low
+
+    db.session.commit()
+
+    return jsonify([])
+
+
+
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
     # import ipdb; ipdb.set_trace()
+    if session.get("user_id") == None:
+        flash("You're not currently logged in!")
+        return redirect("/login")
     user = User.query.filter_by(user_id=user_id).first()
     low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True)
     return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
