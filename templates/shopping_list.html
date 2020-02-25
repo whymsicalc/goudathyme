@@ -18,7 +18,11 @@
         <tbody>
             {% for item in low_ingredients %}
                 <tr>
-                    <td>{{item.ingredients.name}}</td>
+                    {% if item.ingredients.api_id %}
+                      <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
+                    {% else %}
+                      <td>{{item.ingredients.name}}</td>
+                    {% endif %}
                     <td style="text-align:center;">
                         {% if item.running_low == true %}
                         <input type="checkbox" id="is_low" data-item_id="{{item.item_id}}" checked>
