@@ -98,7 +98,9 @@ def show_main_item_page(user_id):
         return redirect("/login")
     user = User.query.filter_by(user_id=user_id).first()
     ingredients = Ingredient.query.all()
-    return render_template("my_items.html", user=user, ingredients=ingredients)
+    items = Item.query.join(Ingredient, Item.ing_id==Ingredient.ing_id).filter(Item.user_id==user_id).order_by(Ingredient.name).all()
+
+    return render_template("my_items.html", user=user, ingredients=ingredients, items=items)
 
 
 @app.route("/add-to-kitchen", methods=["POST"])

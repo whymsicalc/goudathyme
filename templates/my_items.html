@@ -25,22 +25,22 @@
                       </tr>
                   </thead>
                   <tbody id="current-ings">
-                        {% for item in user.items %}
-                            <tr data-item_id="{{item.item_id}}">
-                                {% if item.ingredients.api_id %}
-                                <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
-                                {% else %}
-                                <td>{{item.ingredients.name}}</td>
-                                {% endif %}
-                                <td>{{item.expiration_date}}</td>
-                                <td>{{item.running_low}}</td>
-                                <td>{{item.notes}}</td>
-                                <td>
-                                  <button type="button" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
-                                  <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
-                                  <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
-                                </td>
-                            </tr>
+                        {% for item in items %}
+                          <tr data-item_id="{{item.item_id}}">
+                            {% if item.ingredients.api_id %}
+                              <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
+                            {% else %}
+                              <td>{{item.ingredients.name}}</td>
+                            {% endif %}
+                            <td>{{item.expiration_date}}</td>
+                            <td>{{item.running_low}}</td>
+                            <td>{{item.notes}}</td>
+                            <td>
+                              <button type="button" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
+                              <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
+                              <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                            </td>
+                          </tr>
                         {% endfor %}
                   </tbody>
               </table>
