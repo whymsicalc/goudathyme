@@ -3,6 +3,7 @@ from model import connect_to_db, db, User, Ingredient, Item
 from jinja2 import StrictUndefined
 import os
 import psycopg2
+import requests
 
 # Delete these two when app is ready to go
 from flask_debugtoolbar import DebugToolbarExtension
@@ -194,7 +195,6 @@ def update_running_low():
     return jsonify([])
 
 
-
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
@@ -205,6 +205,19 @@ def show_shopping_list(user_id):
     user = User.query.filter_by(user_id=user_id).first()
     low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True)
     return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
+
+
+@app.route("/ingredient/<int:api_id>")
+def show_ing_info(api_id):
+    """Show information on ingredient from Spoonacular API."""
+    apiKey = os.environ['apiKey']
+    url = "https://api.spoonacular.com/food/ingredients/" + str(api_id) + "/information"
+    payload = {'apiKey': apiKey}
+
+    response = requests.get(url, params=payload)
+    data = response.json()
+
+    return render_template("item_info.html", data=data)
 
 
 if __name__ == "__main__":
