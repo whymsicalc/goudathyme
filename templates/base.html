@@ -17,7 +17,11 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">More Thyme</a>
+  {% if session.get('user_id') %}
+    <a class="navbar-brand" href="/my-items/{{session['user_id']}}">More Thyme</a>
+  {% else %}
+    <a class="navbar-brand" href="/">More Thyme</a>
+  {% endif %}
 
     <!-- TOGGLER DOESNT WORK SINCE NO EVENT LISTENER ON IT YET!! -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +29,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         {% if session.get('user_id') %}
