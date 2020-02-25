@@ -1,5 +1,5 @@
 env
 *pycache*
-*secret.*
+*secret*
 *.pyc
 .DS_Store
