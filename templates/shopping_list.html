@@ -21,9 +21,9 @@
                     <td>{{item.ingredients.name}}</td>
                     <td style="text-align:center;">
                         {% if item.running_low == true %}
-                        <input type="checkbox" checked>
+                        <input type="checkbox" id="is_low" data-item_id="{{item.item_id}}" checked>
                         {% else %}
-                        <input type="checkbox">
+                        <input type="checkbox" id="is_low" data-item_id="{{item.item_id}}">
                         {% endif %}
                     </td>
                 </tr>
@@ -33,4 +33,29 @@
     <button type="submit">Update Kitchen</button>
 </form>
 {% endblock %}
+
+<script>
+    $(#update-groceries).on('submit', (evt) => {
+        evt.preventDefault();
+        // const checked = [];
+
+    //     $('input[type="checkbox"] :checked').each(function() {
+
+    // // looping through each checkbox and storing values in array for checked ones.
+    // allVals.push($(this).val());
+
+    // });
+
+        const row = $(evt.target).parents("tr");
+        const formInputs = {
+            'item_id': row.data('item_id'),
+            'low': row.find('#is_low').is(':checked'),
+        };
+        console.log(row);
+        console.log(formInputs)
+        $.post('/update-groceries', formInputs, (res) => {
+            row.remove();
+        });
+    });
+</script>
 
