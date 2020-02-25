@@ -27,7 +27,11 @@
                   <tbody id="current-ings">
                         {% for item in user.items %}
                             <tr data-item_id="{{item.item_id}}">
+                                {% if item.ingredients.api_id %}
+                                <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
+                                {% else %}
                                 <td>{{item.ingredients.name}}</td>
+                                {% endif %}
                                 <td>{{item.expiration_date}}</td>
                                 <td>{{item.running_low}}</td>
                                 <td>{{item.notes}}</td>
