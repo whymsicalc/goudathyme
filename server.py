@@ -114,13 +114,13 @@ def add_items():
         new_item = Item(user_id=session["user_id"], ing_id=ing_id)
         db.session.add(new_item)
         db.session.commit()
-
         # Append information in a dictionary we need to access in my_items.html to items_json
         items_json.append({"item_id": new_item.item_id,
                                 "ingredient_name": new_item.ingredients.name,
                                 "expiration_date": new_item.expiration_date,
                                 "running_low": new_item.running_low,
-                                "notes": new_item.notes
+                                "notes": new_item.notes,
+                                "api_id": new_item.ingredients.api_id
                                 })
     # Loop over each item user selected
     for item in items:

@@ -80,9 +80,15 @@
                       if (item.notes) {
                         const notes = item.notes
                       };
+                      let name_td = ""
+                      if (item.api_id != null) {
+                        name_td = "<td><a href='/ingredient/" + item.api_id + "'>" + item.ingredient_name + "</a></td>"
+                      } else {
+                        name_td = "<td>" + item.ingredient_name + "</td>"
+                      };
                       $('#current-ings').append(
                           `<tr data-item_id="${item.item_id}"">
-                              <td>${item.ingredient_name}</td>
+                              ${name_td}
                               <td>${expiration}</td>
                               <td>${low}</td>
                               <td>${notes}</td>
