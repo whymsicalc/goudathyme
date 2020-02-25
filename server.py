@@ -217,7 +217,10 @@ def show_ing_info(api_id):
     response = requests.get(url, params=payload)
     data = response.json()
 
-    return render_template("item_info.html", data=data)
+    fact_res = requests.get("https://api.spoonacular.com/food/trivia/random", params=payload)
+    fact = fact_res.json()['text']
+
+    return render_template("item_info.html", data=data, fact=fact)
 
 
 if __name__ == "__main__":
