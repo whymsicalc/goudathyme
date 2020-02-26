@@ -32,7 +32,7 @@
                             {% else %}
                               <td>{{item.ingredients.name}}</td>
                             {% endif %}
-                            <td>{{item.expiration_date}}</td>
+                            <td>{{item.expiration_date.strftime("%A, %B %d, %Y") if item.expiration_date else "None"}}</td>
                             <td>{{item.running_low}}</td>
                             <td>{{item.notes}}</td>
                             <td>
