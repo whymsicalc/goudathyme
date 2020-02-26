@@ -127,10 +127,11 @@
                 });
                 // $('submit').on('click', (evt) => {
               });
-            $(document).ready(function () {
-              $('[data-toggle="tooltip"]').tooltip()
-            })
+            // $(document).ready(function () {
+            //   $('[data-toggle="tooltip"]').tooltip();
+            // })
             $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
                 // Edit row on edit button click
                 $(document).on("click", ".edit", function(){
                     $(this).parents("tr").find("td:nth-child(2)").each(function(){
@@ -148,6 +149,7 @@
                 // Delete row on delete button click
                 $(document).on("click", ".delete", (evt) => {
                     const row = $(evt.target).parents("tr");
+                    $('[data-toggle="tooltip"]').tooltip("hide");
                     const formInputs = {
                       'item_id': row.data('item_id')
                     };
