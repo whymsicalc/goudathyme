@@ -161,11 +161,16 @@ def update_items():
 
     db.session.commit()
 
+    if item.expiration_date:
+        expiration_date = item.expiration_date.strftime("%A, %B %d, %Y")
+    else:
+        expiration_date = item.expiration_date
     items_json = {"ingredient_name": item.ingredients.name,
-                                "expiration_date": item.expiration_date,
+                                "expiration_date": expiration_date,
                                 "running_low": item.running_low,
                                 "notes": item.notes
                                 }
+
     return jsonify(items_json)
 
 
@@ -183,17 +188,17 @@ def delete_row():
 @app.route("/update-groceries", methods=["POST"])
 def update_running_low():
     """Update running_low for items in database."""
-    item_id = request.form.get("item_id")
-    low = request.form.get("low")
-    if low == "true":
-        low = True
-    elif low == "false":
-        low = False
-    item = Item.query.filter_by(item_id=item_id).first()
-    item.running_low = low
+    # item_id = request.form.get("item_id")
+    # low = request.form.get("low")
+    # if low == "true":
+    #     low = True
+    # elif low == "false":
+    #     low = False
+    # item = Item.query.filter_by(item_id=item_id).first()
+    # item.running_low = low
 
-    db.session.commit()
-
+    # db.session.commit()
+    import ipdb; ipdb.set_trace()
     return jsonify([])
 
 
