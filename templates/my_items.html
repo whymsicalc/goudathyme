@@ -134,8 +134,26 @@
                 $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
                 // Edit row on edit button click
                 $(document).on("click", ".edit", function(){
+                  const months = {
+                    'January' : '01',
+                    'February' : '02',
+                    'March' : '03',
+                    'April' : '04',
+                    'May' : '05',
+                    'June' : '06',
+                    'July' : '07',
+                    'August' : '08',
+                    'September' : '09',
+                    'October' : '10',
+                    'November' : '11',
+                    'December' : '12'
+                  }
                     $(this).parents("tr").find("td:nth-child(2)").each(function(){
-                        $(this).html('<input type="date" id="date" class="form-control" value="' + $(this).val() + '">');
+                      const split = $(this).text().split(" ");
+                      const month = months[split[1]];
+                      const date = split[2].slice(0,2);
+                      const year = split[3];
+                        $(this).html('<input type="date" id="date" class="form-control" value="' + year + "-" + month + "-" + date + '">');
                     });
                     $(this).parents("tr").find("td:nth-child(3)").each(function(){
                         $(this).html('<input type="checkbox" id="low" ' + 
