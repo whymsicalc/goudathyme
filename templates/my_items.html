@@ -149,11 +149,16 @@
                     'December' : '12'
                   }
                     $(this).parents("tr").find("td:nth-child(2)").each(function(){
-                      const split = $(this).text().split(" ");
-                      const month = months[split[1]];
-                      const date = split[2].slice(0,2);
-                      const year = split[3];
-                        $(this).html('<input type="date" id="date" class="form-control" value="' + year + "-" + month + "-" + date + '">');
+                      console.log($(this).text());
+                      let new_date = ""
+                      if ($(this).text() != "None"){
+                          const split = $(this).text().split(" ");
+                          const month = months[split[1]];
+                          const date = split[2].slice(0,2);
+                          const year = split[3];
+                          new_date = year + "-" + month + "-" + date
+                        };
+                        $(this).html('<input type="date" id="date" class="form-control" value="' + new_date + '">');
                     });
                     $(this).parents("tr").find("td:nth-child(3)").each(function(){
                         $(this).html('<input type="checkbox" id="low" ' + 
