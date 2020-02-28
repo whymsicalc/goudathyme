@@ -10,11 +10,25 @@ from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
 
 
+# These two are used for Twilio integration to send texts at a specified time
+# import schedule
+# import time
+from send_sms import send_reminder_text
+
+from datetime import date, datetime
+from apscheduler.scheduler import Scheduler
+
+# Start the scheduler
+sched = Scheduler()
+sched.start()
+
+
 app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
 app.secret_key = SECRET_KEY
 
 app.jinja_env.undefined = StrictUndefined
+
 
 @app.route("/")
 def homepage():
@@ -60,10 +74,11 @@ def register_user():
     fname = request.form.get("fname")
     lname = request.form.get("lname")
     email = request.form.get("email")
-    phone = request.form.get("phone")
+    form_phone = request.form.get("phone")
+    phone_parts = form_phone.split("-")
+    phone = "+1" + phone_parts[0] + phone_parts[1] + phone_parts[2]
     username = request.form.get("username")
     password = request.form.get("password")
-
     if not User.query.filter_by(username=username).all():
         new_user = User(fname=fname, lname=lname, email=email, phone=phone, username=username)
         new_user.set_password(password)
@@ -162,7 +177,21 @@ def update_items():
     db.session.commit()
 
     if item.expiration_date:
+        # import ipdb; ipdb.set_trace()
+        print(item.expiration_date)
         expiration_date = item.expiration_date.strftime("%A, %B %d, %Y")
+        print(expiration_date)
+        # The job will be executed on the given date
+        date = item.expiration_date
+        year = date.year
+        month = date.month
+        day = date.day
+        exec_date = datetime(year, month, day, 3, 20, 0)
+        user = User.query.filter_by(user_id=item.user_id).first()
+        to = User.phone
+        msg = "Don't forget to eat your " + item.ingredients.name + " before it expires tomorrow!"
+        # Store the job in a variable in case we want to cancel it
+        job = sched.add_date_job(send_reminder_text, exec_date, [to, msg])
     else:
         expiration_date = item.expiration_date
     items_json = {"ingredient_name": item.ingredients.name,
@@ -188,6 +217,8 @@ def delete_row():
 @app.route("/update-groceries", methods=["POST"])
 def update_running_low():
     """Update running_low for items in database."""
+    print(request.form)
+    print(request.form.getlist("item_ids[]"))
     # item_id = request.form.get("item_id")
     # low = request.form.get("low")
     # if low == "true":
@@ -198,7 +229,7 @@ def update_running_low():
     # item.running_low = low
 
     # db.session.commit()
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     return jsonify([])
 
 
@@ -231,6 +262,7 @@ def show_ing_info(api_id):
 
 
 if __name__ == "__main__":
+    # schedule.run_continuously()
     app.debug = True
     app.jinja_env.auto_reload = app.debug
     # DebugToolbar wasn't functioning correctly, so added this line to fix.
@@ -240,3 +272,4 @@ if __name__ == "__main__":
     DebugToolbarExtension(app)
     app.run(host="0.0.0.0")
 
+# flask run
