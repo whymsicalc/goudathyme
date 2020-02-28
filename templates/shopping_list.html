@@ -7,7 +7,7 @@
 
 {% block content %}
 <h3>Grocery List:</h3>
-<form id="update-groceries" action="/update-groceries" method="POST">
+<form id="update-groceries">
     <table>
         <thead>
             <tr>
@@ -24,42 +24,34 @@
                       <td>{{item.ingredients.name}}</td>
                     {% endif %}
                     <td style="text-align:center;">
-                        {% if item.running_low == true %}
-                        <input type="checkbox" id="is_low" data-item_id="{{item.item_id}}" checked>
-                        {% else %}
-                        <input type="checkbox" id="is_low" data-item_id="{{item.item_id}}">
-                        {% endif %}
+                        <input type="checkbox" name="ids" value="{{item.item_id}}" checked>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    <button type="submit">Update Kitchen</button>
+    <button type="submit" id="update">Update Kitchen</button>
 </form>
-{% endblock %}
 
 <script>
-    $(#update-groceries).on('submit', (evt) => {
-        evt.preventDefault();
-        // const checked = [];
-
-    //     $('input[type="checkbox"] :checked').each(function() {
-
-    // // looping through each checkbox and storing values in array for checked ones.
-    // allVals.push($(this).val());
-
-    // });
-
-        const row = $(evt.target).parents("tr");
-        const formInputs = {
-            'item_id': row.data('item_id'),
-            'low': row.find('#is_low').is(':checked'),
-        };
-        console.log(row);
-        console.log(formInputs)
-        $.post('/update-groceries', formInputs, (res) => {
-            row.remove();
+    $(document).ready(function(){
+        $('#update-groceries').on('submit', (evt) => {
+            evt.preventDefault();
+            const inputs = [];
+            $.each($("input[name='ids']:not(:checked)"), function(){
+                inputs.push($(this).val());
+            });
+            const formInputs = {
+                'item_ids': inputs
+            }
+            console.log(formInputs);
+            console.log("hi");
+            $.post('/update-groceries', formInputs, (res) => {
+                $("input[name='ids']:not(:checked)").each( function(){
+                $(this).parents("tr").remove();
+            });
         });
     });
 </script>
 
+{% endblock %}
