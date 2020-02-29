@@ -239,19 +239,12 @@ def delete_row():
 @app.route("/update-groceries", methods=["POST"])
 def update_running_low():
     """Update running_low for items in database."""
-    print(request.form)
     print(request.form.getlist("item_ids[]"))
-    # item_id = request.form.get("item_id")
-    # low = request.form.get("low")
-    # if low == "true":
-    #     low = True
-    # elif low == "false":
-    #     low = False
-    # item = Item.query.filter_by(item_id=item_id).first()
-    # item.running_low = low
-
-    # db.session.commit()
-    # import ipdb; ipdb.set_trace()
+    item_ids = request.form.getlist("item_ids[]")
+    for id in item_ids:
+        item = Item.query.filter_by(item_id=id).first()
+        item.running_low = False
+        db.session.commit()
     return jsonify([])
 
 
