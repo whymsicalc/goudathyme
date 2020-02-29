@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request, flash, session, jsonify
 from model import connect_to_db, db, User, Ingredient, Item
 from jinja2 import StrictUndefined
+from datetime import date, datetime, timedelta
 import os
 import psycopg2
 import requests
@@ -9,25 +10,61 @@ import requests
 from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
 
-
 # These two are used for Twilio integration to send texts at a specified time
-# import schedule
-# import time
+import schedule
+import time
 from send_sms import send_reminder_text
-
-from datetime import date, datetime
-from apscheduler.scheduler import Scheduler
-
-# Start the scheduler
-sched = Scheduler()
-sched.start()
 
 
 app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
 app.secret_key = SECRET_KEY
+app.debug = True
+app.jinja_env.auto_reload = app.debug
+# DebugToolbar wasn't functioning correctly, so added this line to fix.
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 app.jinja_env.undefined = StrictUndefined
+
+def send_texts():
+    users = User.query.all()
+    item_lst = []
+    # Go through all users
+    for user in users:
+        # Get items from specified user
+        items = Item.query.filter_by(user_id=user.user_id).all()
+        # Go through all items from specified user
+        for item in items:
+            # Check if item expires tomorrow (if expiration date minus one day is equal to today)
+            if (item.expiration_date + timedelta(days=-1)) == date.today():
+                # If item expires tomorrow, add name of item to item_lst
+                item_lst.append(item.ingredients.name)
+        # Make sure item_lst has items in it (if there are expiring items)
+        if len(item_lst) >= 1:
+            to = user.phone
+            # If there is only one expiring item, item_str is string of name of one item
+            if len(item_lst) == 1:
+                item_str = item_lst[0]
+            # If there are multiple items, item_str is comma separated names with an and before last name
+            else:
+                item_str = ", ".join(item_lst[0:-1]) + " and " + item_lst[-1]
+            msg = "Don't forget to eat your " + item_str + " before it expires tomorrow!"
+            send_reminder_text(to, msg)
+
+
+@app.before_first_request
+def setup_app():
+    """Set up app with these configurations."""
+    connect_to_db(app)
+    # Use the DebugToolbar
+    DebugToolbarExtension(app)
+    # At the same time every day (UTC time), do send_texts()
+    schedule.every().day.at("23:00").do(send_texts)
+    # Print statement for debugging/to see when setup_app() gets run
+    print("start time:", datetime.now())
+
+    # Run continuously as opposed to schedule.run_pending()
+    schedule.run_continuously()
 
 
 @app.route("/")
@@ -114,7 +151,6 @@ def show_main_item_page(user_id):
     user = User.query.filter_by(user_id=user_id).first()
     ingredients = Ingredient.query.all()
     items = Item.query.join(Ingredient, Item.ing_id==Ingredient.ing_id).filter(Item.user_id==user_id).order_by(Ingredient.name).all()
-
     return render_template("my_items.html", user=user, ingredients=ingredients, items=items)
 
 
@@ -177,21 +213,7 @@ def update_items():
     db.session.commit()
 
     if item.expiration_date:
-        # import ipdb; ipdb.set_trace()
-        print(item.expiration_date)
         expiration_date = item.expiration_date.strftime("%A, %B %d, %Y")
-        print(expiration_date)
-        # The job will be executed on the given date
-        date = item.expiration_date
-        year = date.year
-        month = date.month
-        day = date.day
-        exec_date = datetime(year, month, day, 3, 20, 0)
-        user = User.query.filter_by(user_id=item.user_id).first()
-        to = User.phone
-        msg = "Don't forget to eat your " + item.ingredients.name + " before it expires tomorrow!"
-        # Store the job in a variable in case we want to cancel it
-        job = sched.add_date_job(send_reminder_text, exec_date, [to, msg])
     else:
         expiration_date = item.expiration_date
     items_json = {"ingredient_name": item.ingredients.name,
@@ -261,15 +283,14 @@ def show_ing_info(api_id):
     return render_template("item_info.html", data=data, fact=fact)
 
 
-if __name__ == "__main__":
-    # schedule.run_continuously()
-    app.debug = True
-    app.jinja_env.auto_reload = app.debug
-    # DebugToolbar wasn't functioning correctly, so added this line to fix.
-    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-    connect_to_db(app)
-    # Use the DebugToolbar
-    DebugToolbarExtension(app)
-    app.run(host="0.0.0.0")
+# if __name__ == "__main__":
+# app.debug = True
+# app.jinja_env.auto_reload = app.debug
+# # DebugToolbar wasn't functioning correctly, so added this line to fix.
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# connect_to_db(app)
+# # Use the DebugToolbar
+# DebugToolbarExtension(app)
+# app.run(host="0.0.0.0")
 
 # flask run
