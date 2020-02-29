@@ -4,7 +4,7 @@ from twilio.rest import Client
 
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
-my_num = os.environment['TWILIO_NUMBER']
+my_num = os.environ['TWILIO_NUMBER']
 client = Client(account_sid, auth_token)
 
 def send_reminder_text(to, msg):
