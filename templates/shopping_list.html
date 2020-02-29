@@ -45,10 +45,10 @@
                 'item_ids': inputs
             }
             console.log(formInputs);
-            console.log("hi");
             $.post('/update-groceries', formInputs, (res) => {
                 $("input[name='ids']:not(:checked)").each( function(){
                 $(this).parents("tr").remove();
+                });
             });
         });
     });
