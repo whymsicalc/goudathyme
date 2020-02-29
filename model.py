@@ -56,7 +56,7 @@ class Item(db.Model):
     item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     ing_id = db.Column(db.Integer, db.ForeignKey("ingredients.ing_id"), nullable=False)
-    expiration_date = db.Column(db.DateTime)
+    expiration_date = db.Column(db.Date)
     running_low = db.Column(db.Boolean)
     notes = db.Column(db.Text)
 
@@ -74,7 +74,7 @@ def connect_to_db(app):
 
     # Configure to use our database
     # Database URI that should be used for the connection: kitchens
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///kitchens"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///kitchen"
     # SQLAlchemy will NOT log all the statements issued to stderr when set to False
     app.config["SQLALCHEMY_ECHO"] = False
     # SQLAlchemy will NOT track modifications of objects
