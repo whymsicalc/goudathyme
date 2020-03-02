@@ -302,6 +302,36 @@ def show_recipes(user_id):
     return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients)  
 
 
+@app.route("/spoonacular/<int:recipe_id>")
+def redirect_to_spoonacular_info(recipe_id):
+    """Show Spoonacular website page with recipe information."""
+    apiKey = os.environ['apiKey']
+    url = "https://api.spoonacular.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
+
+    payload = {'apiKey': apiKey}
+
+    response = requests.get(url, params=payload)
+    data = response.json()
+
+    link = data['spoonacularSourceUrl']
+    return redirect(link)
+
+
+@app.route("/original/<int:recipe_id>")
+def redirect_to_original_info(recipe_id):
+    """Show original website page with recipe information."""
+    apiKey = os.environ['apiKey']
+    url = "https://api.spoonacular.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
+
+    payload = {'apiKey': apiKey}
+
+    response = requests.get(url, params=payload)
+    data = response.json()
+
+    link = data['sourceUrl']
+    return redirect(link)
+
+    
 # if __name__ == "__main__":
 # app.debug = True
 # app.jinja_env.auto_reload = app.debug
