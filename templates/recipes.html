@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+{% for recipe in data %}
+    <h2>Recipe: {{recipe['title']}}</h2><a href="/spoonacular/{{recipe['id']}}">(Spoonacular Details)</a><a href="/original/{{recipe['id']}}">(Original Source)</a><br>
+    <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
+    <h3>Missing Ingredients for this Recipe:</h3>
+    <ul>
+    {% for item in recipe['missedIngredients'] %}
+        <li>{{item['name']}}</li>
+    {% endfor %}
+    </ul>
+    <h3>Ingredients Included in this Recipe:</h3>
+    <ul>
+    {% for item in recipe['usedIngredients'] %}
+        <li>{{item['name']}}</li>
+    {% endfor %}
+    </ul>
+
+{% endfor %}
+
+{% endblock %}
