@@ -35,10 +35,11 @@ def send_texts():
         items = Item.query.filter_by(user_id=user.user_id).all()
         # Go through all items from specified user
         for item in items:
-            # Check if item expires tomorrow (if expiration date minus one day is equal to today)
-            if (item.expiration_date + timedelta(days=-1)) == date.today():
-                # If item expires tomorrow, add name of item to item_lst
-                item_lst.append(item.ingredients.name)
+            if item.expiration_date:
+                # Check if item expires tomorrow (if expiration date minus one day is equal to today)
+                if (item.expiration_date + timedelta(days=-1)) == date.today():
+                    # If item expires tomorrow, add name of item to item_lst
+                    item_lst.append(item.ingredients.name)
         # Make sure item_lst has items in it (if there are expiring items)
         if len(item_lst) >= 1:
             to = user.phone
@@ -331,7 +332,7 @@ def redirect_to_original_info(recipe_id):
     link = data['sourceUrl']
     return redirect(link)
 
-    
+
 # if __name__ == "__main__":
 # app.debug = True
 # app.jinja_env.auto_reload = app.debug
