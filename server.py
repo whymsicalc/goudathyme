@@ -251,7 +251,6 @@ def update_running_low():
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
-    # import ipdb; ipdb.set_trace()
     if session.get("user_id") == None:
         flash("You're not currently logged in!")
         return redirect("/login")
@@ -274,6 +273,33 @@ def show_ing_info(api_id):
     fact = fact_res.json()['text']
 
     return render_template("item_info.html", data=data, fact=fact)
+
+
+@app.route("/recipes/<int:user_id>")
+def show_recipes(user_id):
+    """Show recipes users can make with ingredients in their kitchen."""
+    if session.get("user_id") == None:
+        flash("You're not currently logged in!")
+        return redirect("/login")
+    user = User.query.filter_by(user_id=user_id).first()
+    items = Item.query.filter(Item.user_id==user_id).all()
+    ingredient_names = []
+    for item in items:
+        ingredient_names.append(item.ingredients.name)
+    ingredients = ",".join(ingredient_names)
+
+    apiKey = os.environ['apiKey']
+    url = "https://api.spoonacular.com/recipes/findByIngredients"
+
+    payload = {'apiKey': apiKey,
+    'ingredients': ingredients,
+    'number': 10,
+    'ranking': 2}
+
+    response = requests.get(url, params=payload)
+    data = response.json()
+
+    return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients)  
 
 
 # if __name__ == "__main__":
