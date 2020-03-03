@@ -6,32 +6,37 @@
 
 
 {% block content %}
+{% if low_ingredients %}
 <h3>Grocery List:</h3>
-<form id="update-groceries">
-    <table>
-        <thead>
-            <tr>
-                <th>Ingredient</th>
-                <th>Running Low</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in low_ingredients %}
+    <form id="update-groceries">
+        <table>
+            <thead>
                 <tr>
-                    {% if item.ingredients.api_id %}
-                      <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
-                    {% else %}
-                      <td>{{item.ingredients.name}}</td>
-                    {% endif %}
-                    <td style="text-align:center;">
-                        <input type="checkbox" name="ids" value="{{item.item_id}}" checked>
-                    </td>
+                    <th>Ingredient</th>
+                    <th>Running Low</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <button type="submit" id="update">Update Kitchen</button>
-</form>
+            </thead>
+            <tbody>
+                {% for item in low_ingredients %}
+                    <tr>
+                        {% if item.ingredients.api_id %}
+                          <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
+                        {% else %}
+                          <td>{{item.ingredients.name}}</td>
+                        {% endif %}
+                        <td style="text-align:center;">
+                            <input type="checkbox" name="ids" value="{{item.item_id}}" checked>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" id="update">Update Kitchen</button>
+    </form>
+{% else %}
+<br><h4>You don't have anything logged as running low!</h4>
+{% endif %}
+
 
 <script>
     $(document).ready(function(){
