@@ -294,7 +294,7 @@ def show_recipes(user_id):
 
     payload = {'apiKey': apiKey,
     'ingredients': ingredients,
-    'number': 10,
+    'number': 18,
     'ranking': 2}
 
     response = requests.get(url, params=payload)
