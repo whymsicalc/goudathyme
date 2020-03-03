@@ -186,7 +186,7 @@ def add_items():
         # If item isn't an int, it is something the user wrote in:
         else:
             # Create new Ingredient
-            new_ing = Ingredient(name=item)
+            new_ing = Ingredient(name=item.lower())
             db.session.add(new_ing)
             db.session.commit()
             create_item(new_ing.ing_id)
