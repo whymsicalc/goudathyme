@@ -12,11 +12,16 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <style>
+      #body {
+        margin-top: 70px;
+      }
+    </style>
     {% block head %}
     {% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
   {% if session.get('user_id') %}
     <a class="navbar-brand" href="/my-items/{{session['user_id']}}">More Thyme</a>
   {% else %}
@@ -57,13 +62,15 @@
     </div>
 </nav>
 
-{% for message in get_flashed_messages() %}
-  <div class="alert alert-warning">{{ message }}</div>
-{% endfor %}
+<div id="body">
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">{{ message }}</div>
+  {% endfor %}
 
-{% block content %} 
-BODY CONTENT GOES HERE
-{% endblock %}
+  {% block content %} 
+  BODY CONTENT GOES HERE
+  {% endblock %}
+</div>
 
 </body>
 </html>
