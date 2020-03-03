@@ -256,7 +256,7 @@ def show_shopping_list(user_id):
         flash("You're not currently logged in!")
         return redirect("/login")
     user = User.query.filter_by(user_id=user_id).first()
-    low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True)
+    low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True).all()
     return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
 
 
@@ -301,21 +301,6 @@ def show_recipes(user_id):
     data = response.json()
 
     return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients)  
-
-
-@app.route("/spoonacular/<int:recipe_id>")
-def redirect_to_spoonacular_info(recipe_id):
-    """Show Spoonacular website page with recipe information."""
-    apiKey = os.environ['apiKey']
-    url = "https://api.spoonacular.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
-
-    payload = {'apiKey': apiKey}
-
-    response = requests.get(url, params=payload)
-    data = response.json()
-
-    link = data['spoonacularSourceUrl']
-    return redirect(link)
 
 
 @app.route("/original/<int:recipe_id>")
