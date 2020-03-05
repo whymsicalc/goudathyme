@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-4" style="overflow-x:auto;">
             {% for recipe in data[:6] %}
-                <h3><a href="/original/{{recipe['id']}}">Recipe: {{recipe['title']}}</a></h3>
+                <h3><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></h3>
                 <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
                 <h5 class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></h5>
                 <h4>Missing Ingredients for this Recipe:</h4>
@@ -30,7 +30,7 @@
         </div>
         <div class="col-4" style="overflow-x:auto;">
             {% for recipe in data[6:12] %}
-                <h3><a href="/original/{{recipe['id']}}">Recipe: {{recipe['title']}}</a></h3>
+                <h3><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></h3>
                 <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
                 <h5 class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></h5>
                 <h4>Missing Ingredients for this Recipe:</h4>
@@ -49,7 +49,7 @@
         </div>
         <div class="col-4" style="overflow-x:auto;">
             {% for recipe in data[12:] %}
-                <h3><a href="/original/{{recipe['id']}}">Recipe: {{recipe['title']}}</a></h3>
+                <h3><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></h3>
                 <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
                 <h5 class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></h5>
                 <h4>Missing Ingredients for this Recipe:</h4>
