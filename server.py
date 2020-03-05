@@ -119,8 +119,11 @@ def register_user():
     lname = request.form.get("lname")
     email = request.form.get("email")
     form_phone = request.form.get("phone")
-    phone_parts = form_phone.split("-")
-    phone = "+1" + phone_parts[0] + phone_parts[1] + phone_parts[2]
+    if form_phone:
+        phone_parts = form_phone.split("-")
+        phone = "+1" + phone_parts[0] + phone_parts[1] + phone_parts[2]
+    else:
+        phone = None
     username = request.form.get("username")
     password = request.form.get("password")
     if not User.query.filter_by(username=username).all():
@@ -135,6 +138,48 @@ def register_user():
     else:
         flash("User already exists! Try logging in instead.")
         return redirect("/login")
+
+
+@app.route("/profile/<int:user_id>")
+def show_profile(user_id):
+    """Show current user's profile."""
+    logged_in = check_logged_in()
+    if logged_in:
+        return logged_in
+
+    user = User.query.filter_by(user_id=user_id).first()
+
+    return render_template("profile.html", user=user)
+
+
+@app.route("/update-profile", methods=["POST"])
+def update_profile():
+    """Update profile with given information."""
+    user_id = request.form.get("user_id")
+    fname = request.form.get("fname")
+    lname = request.form.get("lname")
+    email = request.form.get("email")
+    form_phone = request.form.get("phone")
+    if form_phone:
+        phone_parts = form_phone.split("-")
+        phone = "+1" + phone_parts[0] + phone_parts[1] + phone_parts[2]
+    else:
+        phone = None
+
+    user = User.query.filter_by(user_id=user_id).first()
+    user.fname = fname
+    user.lname = lname
+    user.email = email
+    user.phone = phone
+    db.session.commit()
+
+    items_json = {"fname": user.fname,
+                "lname": user.lname,
+                "email": user.email,
+                "phone": user.phone
+                }
+
+    return jsonify(items_json)
 
 
 @app.route("/logout")
@@ -278,14 +323,14 @@ def show_ing_info(api_id):
     return render_template("item_info.html", data=data, fact=fact)
 
 
-@app.route("/recipes/<int:user_id>")
+@app.route("/recipe-search/<int:user_id>")
 def show_recipe_search(user_id):
     """Show search options for recipes."""
     check_logged_in()
     return render_template("recipe_search.html", user_id=user_id)
 
 
-@app.route("/recipe_search", methods=["POST"])
+@app.route("/recipe-search", methods=["POST"])
 def search_recipes():
     """Search for recipes based on given criteria."""
     user_id = request.form.get("user_id")
@@ -302,40 +347,42 @@ def search_recipes():
 
     url = "https://api.spoonacular.com/recipes/complexSearch"
     payload = {'apiKey': APIKEY,
-        'includeIngredients': "eggs, flour",
+        # 'includeIngredients': ingredients,
         'cuisine': cuisine,
         'diet': diet,
         'type': food_type,
         'instructionsRequired': 'true',
         'fillIngredients': 'true',
-        'addRecipeInformation': 'true'}
+        'addRecipeInformation': 'true',
+        # 'sort': 'min-missing-ingredients'
+        }
     response = requests.get(url, params=payload)
     data = response.json()
     return data
 
 
-# @app.route("/recipes/<int:user_id>")
-# def show_recipes(user_id):
-#     """Show recipes users can make with ingredients in their kitchen."""
-#     check_logged_in()
-    # user = User.query.filter_by(user_id=user_id).first()
-    # items = Item.query.filter(Item.user_id==user_id).all()
-    # ingredient_names = []
-    # for item in items:
-    #     ingredient_names.append(item.ingredients.name)
-    # ingredients = ",".join(ingredient_names)
+@app.route("/recipes/<int:user_id>")
+def show_recipes(user_id):
+    """Show recipes users can make with ingredients in their kitchen."""
+    check_logged_in()
+    user = User.query.filter_by(user_id=user_id).first()
+    items = Item.query.filter(Item.user_id==user_id).all()
+    ingredient_names = []
+    for item in items:
+        ingredient_names.append(item.ingredients.name)
+    ingredients = ",".join(ingredient_names)
 
-#     url = "https://api.spoonacular.com/recipes/findByIngredients"
+    url = "https://api.spoonacular.com/recipes/findByIngredients"
 
-    # payload = {'apiKey': APIKEY,
-    # 'ingredients': ingredients,
-    # 'number': 18,
-    # 'ranking': 2}
+    payload = {'apiKey': APIKEY,
+    'ingredients': ingredients,
+    'number': 18,
+    'ranking': 2}
 
-    # response = requests.get(url, params=payload)
-    # data = response.json()
+    response = requests.get(url, params=payload)
+    data = response.json()
 
-#     return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients, apiKey=APIKEY)  
+    return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients, apiKey=APIKEY)  
 
 
 @app.route("/original/<int:recipe_id>")
