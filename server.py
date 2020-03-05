@@ -18,6 +18,7 @@ from send_sms import send_reminder_text
 
 app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
+APIKEY = os.environ['apiKey']
 app.secret_key = SECRET_KEY
 app.debug = True
 app.jinja_env.auto_reload = app.debug
@@ -52,6 +53,11 @@ def send_texts():
             msg = "Don't forget to eat your " + item_str + " before it expires tomorrow!"
             send_reminder_text(to, msg)
 
+
+def check_logged_in():
+    if session.get("user_id") == None:
+        flash("You're not currently logged in!")
+        return redirect("/login")
 
 @app.before_first_request
 def setup_app():
@@ -146,9 +152,9 @@ def logout_user():
 @app.route("/my-items/<int:user_id>")
 def show_main_item_page(user_id):
     """Show main page for users to add items and see list of what they currently have."""
-    if session.get("user_id") == None:
-        flash("You're not currently logged in!")
-        return redirect("/login")
+    logged_in = check_logged_in()
+    if logged_in:
+        return logged_in
     user = User.query.filter_by(user_id=user_id).first()
     ingredients = Ingredient.query.all()
     items = Item.query.join(Ingredient, Item.ing_id==Ingredient.ing_id).filter(Item.user_id==user_id).order_by(Ingredient.name).all()
@@ -240,7 +246,6 @@ def delete_row():
 @app.route("/update-groceries", methods=["POST"])
 def update_running_low():
     """Update running_low for items in database."""
-    print(request.form.getlist("item_ids[]"))
     item_ids = request.form.getlist("item_ids[]")
     for id in item_ids:
         item = Item.query.filter_by(item_id=id).first()
@@ -252,9 +257,7 @@ def update_running_low():
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
-    if session.get("user_id") == None:
-        flash("You're not currently logged in!")
-        return redirect("/login")
+    check_logged_in()
     user = User.query.filter_by(user_id=user_id).first()
     low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True).all()
     return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
@@ -263,9 +266,8 @@ def show_shopping_list(user_id):
 @app.route("/ingredient/<int:api_id>")
 def show_ing_info(api_id):
     """Show information on ingredient from Spoonacular API."""
-    apiKey = os.environ['apiKey']
     url = "https://api.spoonacular.com/food/ingredients/" + str(api_id) + "/information"
-    payload = {'apiKey': apiKey}
+    payload = {'apiKey': APIKEY}
 
     response = requests.get(url, params=payload)
     data = response.json()
@@ -277,11 +279,20 @@ def show_ing_info(api_id):
 
 
 @app.route("/recipes/<int:user_id>")
-def show_recipes(user_id):
-    """Show recipes users can make with ingredients in their kitchen."""
-    if session.get("user_id") == None:
-        flash("You're not currently logged in!")
-        return redirect("/login")
+def show_recipe_search(user_id):
+    """Show search options for recipes."""
+    check_logged_in()
+    return render_template("recipe_search.html", user_id=user_id)
+
+
+@app.route("/recipe_search", methods=["POST"])
+def search_recipes():
+    """Search for recipes based on given criteria."""
+    user_id = request.form.get("user_id")
+    food_type = request.form.get("type")
+    diet = request.form.get("diet")
+    cuisine = request.form.get("cuisine")
+
     user = User.query.filter_by(user_id=user_id).first()
     items = Item.query.filter(Item.user_id==user_id).all()
     ingredient_names = []
@@ -289,27 +300,50 @@ def show_recipes(user_id):
         ingredient_names.append(item.ingredients.name)
     ingredients = ",".join(ingredient_names)
 
-    apiKey = os.environ['apiKey']
-    url = "https://api.spoonacular.com/recipes/findByIngredients"
-
-    payload = {'apiKey': apiKey,
-    'ingredients': ingredients,
-    'number': 18,
-    'ranking': 2}
-
+    url = "https://api.spoonacular.com/recipes/complexSearch"
+    payload = {'apiKey': APIKEY,
+        'includeIngredients': "eggs, flour",
+        'cuisine': cuisine,
+        'diet': diet,
+        'type': food_type,
+        'instructionsRequired': 'true',
+        'fillIngredients': 'true',
+        'addRecipeInformation': 'true'}
     response = requests.get(url, params=payload)
     data = response.json()
+    return data
 
-    return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients)  
+
+# @app.route("/recipes/<int:user_id>")
+# def show_recipes(user_id):
+#     """Show recipes users can make with ingredients in their kitchen."""
+#     check_logged_in()
+    # user = User.query.filter_by(user_id=user_id).first()
+    # items = Item.query.filter(Item.user_id==user_id).all()
+    # ingredient_names = []
+    # for item in items:
+    #     ingredient_names.append(item.ingredients.name)
+    # ingredients = ",".join(ingredient_names)
+
+#     url = "https://api.spoonacular.com/recipes/findByIngredients"
+
+    # payload = {'apiKey': APIKEY,
+    # 'ingredients': ingredients,
+    # 'number': 18,
+    # 'ranking': 2}
+
+    # response = requests.get(url, params=payload)
+    # data = response.json()
+
+#     return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients, apiKey=APIKEY)  
 
 
 @app.route("/original/<int:recipe_id>")
 def redirect_to_original_info(recipe_id):
     """Show original website page with recipe information."""
-    apiKey = os.environ['apiKey']
     url = "https://api.spoonacular.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
 
-    payload = {'apiKey': apiKey}
+    payload = {'apiKey': APIKEY}
 
     response = requests.get(url, params=payload)
     data = response.json()
@@ -317,6 +351,11 @@ def redirect_to_original_info(recipe_id):
     link = data['sourceUrl']
     return redirect(link)
 
+
+# @app.route("/descriptor", methods=["POST"])
+# def retreive_recipe_descriptor():
+#     """Get summary of recipe from Spoonacular API"""
+#     url = "https://api.spoonacular.com/recipes/" + {id} + "/summary"
 
 # if __name__ == "__main__":
 # app.debug = True
