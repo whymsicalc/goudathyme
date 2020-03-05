@@ -41,7 +41,7 @@
                             <td>{{item.running_low}}</td>
                             <td>{{item.notes}}</td>
                             <td>
-                              <button type="button" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
+                              <a class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></a>
                               <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
                               <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
                             </td>
@@ -103,9 +103,9 @@
                               <td>${low}</td>
                               <td>${notes}</td>
                               <td>
-                                <button type="button" class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></button>
-                                  <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
-                                  <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                                <a class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></a>
+                                <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
+                                <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
                               </td>
                           </tr>`
                           );
@@ -191,7 +191,7 @@
                     })
             });
 
-            $('#update-kitchen').on('click', 'button.add', (evt) => {
+            $('#update-kitchen').on('click', '.add', (evt) => {
                   evt.preventDefault();
                   const row = $(evt.target).parents("tr");
                    const formInputs = {
