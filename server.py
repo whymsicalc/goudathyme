@@ -347,7 +347,6 @@ def search_recipes():
     cuisine = request.form.get("cuisine")
     intolerances_list = request.form.getlist("intolerances[]")
     intolerances = ",".join(intolerances_list)
-    into = request.form.get("into")
     maxReadyTime = request.form.get("maxReadyTime")
     sort = request.form.get("sort")
 
