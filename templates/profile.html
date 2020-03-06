@@ -26,7 +26,6 @@
                 'email': $("#emailadd").val(),
                 'phone': $("#phonenum").val()
             };
-            console.log(formInputs);
             $.post('/update-profile', formInputs, (res) => {
                 $("#fname").html(res.fname);
                 $("#lname").html(res.lname);
