@@ -109,6 +109,7 @@
                               </td>
                           </tr>`
                           );
+                      $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
                   }});
                   // Clear select box each time user adds ingredient
                   $(".new-ingredient").val('').trigger('change');
