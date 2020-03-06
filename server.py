@@ -18,7 +18,7 @@ from send_sms import send_reminder_text
 
 app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
-APIKEY = os.environ['apiKey']
+APIKEY = os.environ['APIKEY']
 app.secret_key = SECRET_KEY
 app.debug = True
 app.jinja_env.auto_reload = app.debug
@@ -58,6 +58,30 @@ def check_logged_in():
     if session.get("user_id") == None:
         flash("You're not currently logged in!")
         return redirect("/login")
+
+
+def get_json(url, payload=None):
+    """Get JSON from API call to Spoonacular."""
+    payload = payload or {}
+    payload.update({'apiKey': APIKEY})
+    response = requests.get(url, params=payload)
+    return response.json()
+
+
+def create_item(ing_id):
+    """Create an Item instance to add to items table."""
+    new_item = Item(user_id=session["user_id"], ing_id=ing_id)
+    db.session.add(new_item)
+    db.session.commit()
+    # Append information in a dictionary we need to access in my_items.html to items_json
+    return {"item_id": new_item.item_id,
+                            "ingredient_name": new_item.ingredients.name,
+                            "expiration_date": new_item.expiration_date,
+                            "running_low": new_item.running_low,
+                            "notes": new_item.notes,
+                            "api_id": new_item.ingredients.api_id
+                            }
+
 
 @app.before_first_request
 def setup_app():
@@ -147,7 +171,7 @@ def show_profile(user_id):
     if logged_in:
         return logged_in
 
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
 
     return render_template("profile.html", user=user)
 
@@ -166,7 +190,7 @@ def update_profile():
     else:
         phone = None
 
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
     user.fname = fname
     user.lname = lname
     user.email = email
@@ -200,7 +224,7 @@ def show_main_item_page(user_id):
     logged_in = check_logged_in()
     if logged_in:
         return logged_in
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
     ingredients = Ingredient.query.all()
     items = Item.query.join(Ingredient, Item.ing_id==Ingredient.ing_id).filter(Item.user_id==user_id).order_by(Ingredient.name).all()
     return render_template("my_items.html", user=user, ingredients=ingredients, items=items)
@@ -212,27 +236,14 @@ def add_items():
     # Get items saved in "ingredients" from my_items.html in list form
     items = request.form.getlist("ingredients")
     items_json =[]
-    def create_item(ing_id):
-        """Create an Item instance to add to items table."""
-        new_item = Item(user_id=session["user_id"], ing_id=ing_id)
-        db.session.add(new_item)
-        db.session.commit()
-        # Append information in a dictionary we need to access in my_items.html to items_json
-        items_json.append({"item_id": new_item.item_id,
-                                "ingredient_name": new_item.ingredients.name,
-                                "expiration_date": new_item.expiration_date,
-                                "running_low": new_item.running_low,
-                                "notes": new_item.notes,
-                                "api_id": new_item.ingredients.api_id
-                                })
+
     # Loop over each item user selected
     for item in items:
-        if item.isdigit():
-            # Check if item exists in ingredients table
-            if Ingredient.query.filter_by(ing_id=item).first() != None:
-                # Create Item instance to add to items table if it's not in the user's kitchen yet
-                if Item.query.filter_by(user_id=session["user_id"], ing_id=int(item)).first() == None:
-                    create_item(int(item))
+        # Check if item exists in ingredients table
+        if item.isdigit() and Ingredient.query.get(item) != None:
+            # Create Item instance to add to items table if it's not in the user's kitchen yet
+            if Item.query.filter_by(user_id=session["user_id"], ing_id=int(item)).first() == None:
+                items_json.append(create_item(int(item)))
 
         # If item isn't an int, it is something the user wrote in:
         else:
@@ -240,7 +251,7 @@ def add_items():
             new_ing = Ingredient(name=item.lower())
             db.session.add(new_ing)
             db.session.commit()
-            create_item(new_ing.ing_id)
+            items_json.append(create_item(new_ing.ing_id))
 
     return jsonify(items_json)
 
@@ -303,7 +314,7 @@ def update_running_low():
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
     check_logged_in()
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
     low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True).all()
     return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
 
@@ -312,13 +323,10 @@ def show_shopping_list(user_id):
 def show_ing_info(api_id):
     """Show information on ingredient from Spoonacular API."""
     url = "https://api.spoonacular.com/food/ingredients/" + str(api_id) + "/information"
-    payload = {'apiKey': APIKEY}
+    data = get_json(url)
 
-    response = requests.get(url, params=payload)
-    data = response.json()
-
-    fact_res = requests.get("https://api.spoonacular.com/food/trivia/random", params=payload)
-    fact = fact_res.json()['text']
+    fact_url = "https://api.spoonacular.com/food/trivia/random"
+    fact = get_json(fact_url)['text']
 
     return render_template("item_info.html", data=data, fact=fact)
 
@@ -337,8 +345,13 @@ def search_recipes():
     food_type = request.form.get("type")
     diet = request.form.get("diet")
     cuisine = request.form.get("cuisine")
+    intolerances_list = request.form.getlist("intolerances[]")
+    intolerances = ",".join(intolerances_list)
+    into = request.form.get("into")
+    maxReadyTime = request.form.get("maxReadyTime")
+    sort = request.form.get("sort")
 
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
     items = Item.query.filter(Item.user_id==user_id).all()
     ingredient_names = []
     for item in items:
@@ -346,18 +359,19 @@ def search_recipes():
     ingredients = ",".join(ingredient_names)
 
     url = "https://api.spoonacular.com/recipes/complexSearch"
-    payload = {'apiKey': APIKEY,
+    payload = {
         # 'includeIngredients': ingredients,
         'cuisine': cuisine,
         'diet': diet,
         'type': food_type,
+        'intolerances': intolerances,
+        'maxReadyTime': maxReadyTime,
         'instructionsRequired': 'true',
         'fillIngredients': 'true',
         'addRecipeInformation': 'true',
-        # 'sort': 'min-missing-ingredients'
+        'sort': sort
         }
-    response = requests.get(url, params=payload)
-    data = response.json()
+    data = get_json(url, payload)
     return data
 
 
@@ -365,7 +379,7 @@ def search_recipes():
 def show_recipes(user_id):
     """Show recipes users can make with ingredients in their kitchen."""
     check_logged_in()
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
     items = Item.query.filter(Item.user_id==user_id).all()
     ingredient_names = []
     for item in items:
@@ -374,13 +388,11 @@ def show_recipes(user_id):
 
     url = "https://api.spoonacular.com/recipes/findByIngredients"
 
-    payload = {'apiKey': APIKEY,
-    'ingredients': ingredients,
+    payload = {'ingredients': ingredients,
     'number': 18,
     'ranking': 2}
 
-    response = requests.get(url, params=payload)
-    data = response.json()
+    data = get_json(url, payload)
 
     return render_template("recipes.html", data=data, user=user, ingredient_names=ingredient_names, ingredients=ingredients, apiKey=APIKEY)  
 
@@ -388,14 +400,11 @@ def show_recipes(user_id):
 @app.route("/original/<int:recipe_id>")
 def redirect_to_original_info(recipe_id):
     """Show original website page with recipe information."""
-    url = "https://api.spoonacular.com/recipes/" + str(recipe_id) + "/information?includeNutrition=false"
+    
+    url = "https://api.spoonacular.com/recipes/" + str(recipe_id) + "/information"
+    payload = {'includeNutrition': 'false'}
+    link = get_json(url, payload)['sourceUrl']
 
-    payload = {'apiKey': APIKEY}
-
-    response = requests.get(url, params=payload)
-    data = response.json()
-
-    link = data['sourceUrl']
     return redirect(link)
 
 
