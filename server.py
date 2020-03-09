@@ -86,16 +86,18 @@ def create_item(ing_id):
 @app.before_first_request
 def setup_app():
     """Set up app with these configurations."""
-    connect_to_db(app)
-    # Use the DebugToolbar
-    DebugToolbarExtension(app)
-    # At the same time every day (UTC time), do send_texts()
-    schedule.every().day.at("23:00").do(send_texts)
-    # Print statement for debugging/to see when setup_app() gets run
-    print("start time:", datetime.now())
 
-    # Run continuously as opposed to schedule.run_pending()
-    schedule.run_continuously()
+    if not app.config["TESTING"]:
+        connect_to_db(app)
+        # Use the DebugToolbar
+        DebugToolbarExtension(app)
+        # At the same time every day (UTC time), do send_texts()
+        schedule.every().day.at("23:00").do(send_texts)
+        # Print statement for debugging/to see when setup_app() gets run
+        print("start time:", datetime.now())
+
+        # Run continuously as opposed to schedule.run_pending()
+        schedule.run_continuously()
 
 
 @app.route("/")
