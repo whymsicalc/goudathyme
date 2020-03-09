@@ -69,12 +69,33 @@ class Item(db.Model):
         return f"<user={self.users.fname} {self.users.lname} ingredient={self.ingredients.name}>"
 
 
-def connect_to_db(app):
+def example_data():
+    """Create sample data for testing."""
+
+    # In case this is run more than once, empty out existing data
+    User.query.delete()
+    Ingredient.query.delete()
+    Item.query.delete()
+
+    # Add sample users, ingredients and items
+    user = User(username='janedoe', fname='Jane', lname='Doe', email='jane@gmail.com', phone='+14155555555')
+    user.set_password('abc123')
+
+    apple = Ingredient(name='apple', api_id='9003')
+    farfalle = Ingredient(name='farfalle', api_id='10120420')
+    seasoning = Ingredient(name='old bay seasoning', api_id='1052034')
+    fake = Ingredient(name='fake ingredient')
+
+    db.session.add_all([user, apple, farfalle, seasoning, fake])
+    db.session.commit()
+
+
+def connect_to_db(app, database='postgres:///kitchen'):
     """Connect the dataase to our Flask app."""
 
     # Configure to use our database
     # Database URI that should be used for the connection: kitchens
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///kitchen"
+    app.config["SQLALCHEMY_DATABASE_URI"] = database
     # SQLAlchemy will NOT log all the statements issued to stderr when set to False
     app.config["SQLALCHEMY_ECHO"] = False
     # SQLAlchemy will NOT track modifications of objects
