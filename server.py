@@ -349,13 +349,17 @@ def search_recipes():
     intolerances = ",".join(intolerances_list)
     maxReadyTime = request.form.get("maxReadyTime")
     sort = request.form.get("sort")
+    # can use to paginate results
+    # offset = request.form.get("offset")
 
     user = User.query.get(user_id)
     items = Item.query.filter(Item.user_id==user_id).all()
-    ingredient_names = []
-    for item in items:
-        ingredient_names.append(item.ingredients.name)
-    ingredients = ",".join(ingredient_names)
+    # can set ingredients to search by ingredients
+    # Waiting for Spoonacular to update Complex search to implement this
+    # ingredient_names = []
+    # for item in items:
+    #     ingredient_names.append(item.ingredients.name)
+    # ingredients = ",".join(ingredient_names)
 
     url = "https://api.spoonacular.com/recipes/complexSearch"
     payload = {
@@ -368,7 +372,8 @@ def search_recipes():
         'instructionsRequired': 'true',
         'fillIngredients': 'true',
         'addRecipeInformation': 'true',
-        'sort': sort
+        'sort': sort,
+        # 'offset': offset
         }
     data = get_json(url, payload)
     return data
