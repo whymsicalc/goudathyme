@@ -31,13 +31,26 @@
                 for (idx in res.results) {
                     console.log(res.results[idx]);
                     const result = res.results[idx];
-                    $('div.body').append(`<h3>${result['title']}</h3><br>
-                        <img src="${result['image']}"><br>
-                        <p>${result['summary']}</p><br>
-                        <h4>Missing Ingredients for this Recipe:</h4>
-                        <ul>`
-                        )
+                    let diets = ''
+                    if (result['diets'].length != 0){
+                        diets = '<div><b>Diet Matches:</b></div><ul>'
+                        for (const idx in result['diets']){
+                            diets += `<li>${result['diets'][idx]}</li>`
+                            }
+                        diets += '</ul>'
+                        }
+                    let mins = ''
+                    if (result['readyInMinutes'] != 0 || result['readyInMinutes'] != null){
+                        mins = `<div><b>Minutes to Prepare: </b>${result['readyInMinutes']}</div>`
+                    }
+                    let servings = ''
+                    if (result['servings'] != 0 || result['servings'] != null){
+                        servings = `<div><b>Servings: </b>${result['servings']}</div><br>`
+                    }
+                    $('div.body').append(`<h3><a href="${result['sourceUrl']}">${result['title']}</a></h3>
+                        <img src="${result['image']}"><br>` + diets + mins + servings)
                 }
+                // $('div.body').append(`<span>More Recipes <button id="more" type="submit">>></button></span>`)
             });
         });
       });
