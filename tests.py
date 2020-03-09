@@ -1,11 +1,49 @@
-from unittest import TestCase
+
+from model import connect_to_db, db, example_data 
 from server import app
-from model import connect_to_db, db, example_data
 from flask import session
 import os
+from unittest import TestCase
+
         
-# Connect to test database
-connect_to_db(app, "postgresql:///testdb")
+def use_db(db_uri, db, app):
+    """Decorate a TestCase class to set up database connections.
+    Since we use Flask-SQLAlchemy to facilitate database connections, this
+    decorator needs:
+    - db_uri: the database URI
+    - db: A SQLAlchemy instance
+    - app: A Flask instance
+    """
+    def inner(cls):
+        temp_init = cls.__init__
+        temp_setup = cls.setUp
+        temp_teardown = cls.tearDown
+        def init_db(self, *args) -> None:
+            if not getattr(self, 'app', None):
+                self.app = app
+            self.app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+            self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+            if not getattr(self, 'db', None):
+                self.db = db
+            self.db.app = self.app
+            self.db.init_app(self.app)
+            temp_init(self, *args)
+        cls.__init__ = init_db
+        def setup_db(self) -> None:
+            self.connection = db.engine.connect()
+            self.trans = self.connection.begin()
+            self.session = db.session
+            temp_setup(self)
+        cls.setUp = setup_db
+        def teardown_db(self) -> None:
+            self.session.close()
+            self.trans.rollback()
+            self.db.drop_all()
+            self.connection.close()
+            temp_teardown(self)
+        cls.tearDown = teardown_db
+        return cls
+    return inner
 
 class FlaskTestsBasic(TestCase):
     """Flask tests."""
@@ -31,30 +69,21 @@ class FlaskTestsBasic(TestCase):
         result = self.client.get("/register")
         self.assertIn(b"Create an Account", result.data)
 
-
+@use_db('postgres:///testdb', db, app)
 class FlaskTestsDatabase(TestCase):
     """Flask tests that use the database."""
 
     def setUp(self):
         """Things to do before every test."""
 
-        # Get the Flask test client
-        self.client = app.test_client()
-        app.config['TESTING'] = True
+        self.client = self.app.test_client()
 
         # Create tables and add sample data
-        db.create_all()
+        self.db.create_all()
         example_data()
 
-    def tearDown(self):
-        """Do at end of every test."""
-
-        db.session.remove()
-        db.drop_all()
-        db.engine.dispose()
-
     def test_login(self):
-        """Test login page."""
+        """Test login."""
 
         result = self.client.post("/login",
                                   data={"username": "janedoe", "password": "abc123"},
@@ -81,35 +110,29 @@ class FlaskTestsDatabase(TestCase):
         """Test account creation."""
 
         result = self.client.post("/register",
-                                  data={"fname": "John", "lname": "Smith", "email": "john@gmail.com", "form_phone": None, "username": "johnsmith", "password": "123"},
+                                  data={"fname": "John", "lname": "Smith", 
+                                        "email": "john@gmail.com", "form_phone": None, 
+                                        "username": "johnsmith", "password": "123"},
                                   follow_redirects=True)
         self.assertIn(b"Hello there", result.data)
 
 
+@use_db('postgres:///testdb', db, app)
 class FlaskTestsLoggedIn(TestCase):
     """Flask tests with user logged in to session."""
 
     def setUp(self):
         """Things to do before every test."""
 
-        app.config['TESTING'] = True
-        app.config['SECRET_KEY'] = os.environ['SECRET_KEY'] 
+        self.client = self.app.test_client()
+        self.app.config['SECRET_KEY'] = os.environ['SECRET_KEY'] 
 
-        self.client = app.test_client()
+        self.db.create_all()
+        example_data()
 
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['user_id'] = 1
-
-        db.create_all()
-        example_data()
-
-    def tearDown(self):
-        """Do at end of every test."""
-
-        db.session.remove()
-        db.drop_all()
-        db.engine.dispose()
 
     def test_my_items_page(self):
         """Test my items page."""
@@ -135,24 +158,17 @@ class FlaskTestsLoggedOut(TestCase):
         self.assertIn(b"Sign In", result.data)
 
 
+@use_db('postgres:///testdb', db, app)
 class FlaskTestsLogInLogOut(TestCase):
     """Test log in and log out."""
 
     def setUp(self):
         """Before every test"""
 
-        app.config['TESTING'] = True
-        self.client = app.test_client()
+        self.client = self.app.test_client()
 
-        db.create_all()
+        self.db.create_all()
         example_data()
-
-    def tearDown(self):
-        """Do at end of every test."""
-
-        db.session.remove()
-        db.drop_all()
-        db.engine.dispose()
 
     def test_login(self):
         """Test log in form.
