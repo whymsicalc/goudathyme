@@ -1,5 +1,37 @@
 {% extends 'base.html' %}
+{% block head %}
+<link href="/static/index.css" rel="stylesheet" type="text/css">
+<style>
+.fixed {
+  position: fixed;
+}
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url(/static/pizza.jpg);
+    background-attachment: fixed;
+}
+</style>
+{% endblock %}
 {% block content %}
-<h1>Hello! Welcome to More Thyme!</h1><br>
-<h2>Please <a href="/login">log in</a> or <a href="/register">create an account</a> with us to start adding to your list of items in your kitchen!</h2>
+<div class="body">
+    <div class="page-holder bg-cover darken">
+        <div class="fixed">
+            <div class="row justify-content-center">
+                <div class="col-3">
+                    <img src="/static/gouda-time-logo.png">
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    <h1 class="white">Hello! Welcome to <br>Gouda Thyme!</h1><br>
+                    <h2 class="white">Please <a href="/login">log in</a> or <a href="/register">create an account</a> with us to start adding to your list of items in your kitchen!</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
