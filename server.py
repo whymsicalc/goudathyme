@@ -103,12 +103,18 @@ def setup_app():
 @app.route("/")
 def homepage():
     """Show homepage."""
+    if session.get("user_id") != None:
+        user_id = session["user_id"]
+        return redirect(f"/my-items/{user_id}")
     return render_template("index.html")
 
 
 @app.route("/login")
 def show_login_page():
     """Show page for user to log in."""
+    if session.get("user_id") != None:
+        user_id = session["user_id"]
+        return redirect(f"/my-items/{user_id}")
     return render_template("login.html")
 
 
@@ -315,7 +321,9 @@ def update_running_low():
 @app.route("/shopping-list/<int:user_id>")
 def show_shopping_list(user_id):
     """Show list of items that user has marked as running low."""
-    check_logged_in()
+    logged_in = check_logged_in()
+    if logged_in:
+        return logged_in
     user = User.query.get(user_id)
     low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True).all()
     return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
@@ -336,7 +344,9 @@ def show_ing_info(api_id):
 @app.route("/recipe-search/<int:user_id>")
 def show_recipe_search(user_id):
     """Show search options for recipes."""
-    check_logged_in()
+    logged_in = check_logged_in()
+    if logged_in:
+        return logged_in
     return render_template("recipe_search.html", user_id=user_id)
 
 
@@ -384,7 +394,9 @@ def search_recipes():
 @app.route("/recipes/<int:user_id>")
 def show_recipes(user_id):
     """Show recipes users can make with ingredients in their kitchen."""
-    check_logged_in()
+    logged_in = check_logged_in()
+    if logged_in:
+        return logged_in
     user = User.query.get(user_id)
     items = Item.query.filter(Item.user_id==user_id).all()
     ingredient_names = []
