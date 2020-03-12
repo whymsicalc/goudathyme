@@ -60,11 +60,11 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #293240;">
   {% if session.get('user_id') %}
     <a class="navbar-brand" href="/my-items/{{session['user_id']}}">
-      <img class="navbar-logo" src="/static/gouda-time-logo.png" width="50" alt="">
+      <img class="navbar-logo" src="/images/gouda-time-logo.png" width="50" alt="">
     </a>
   {% else %}
     <a class="navbar-brand" href="/">
-      <img class="navbar-logo" src="/static/gouda-time-logo.png" width="50" alt="">
+      <img class="navbar-logo" src="/images/gouda-time-logo.png" width="50" alt="">
     </a>
   {% endif %}
 
