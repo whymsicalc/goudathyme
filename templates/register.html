@@ -1,16 +1,107 @@
 {% extends 'base.html' %}
+
+{% block head %}
+<link href="/static/index.css" rel="stylesheet" type="text/css">
+<style>
+.body {
+    margin:0px;
+    width: 100%;
+    height: 100%;
+}
+
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.4),
+      rgba(0, 0, 0, 0.4)
+    ),
+    url(/static/login.jpg);
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+}
+.fixed {
+  position: fixed;
+}
+img {
+    padding: 0px;
+    margin: 0px;
+}
+.card-body {
+    padding: 0px;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<h3>Create an Account!</h3>
-<form action="/register" method="POST">
-    <input name="fname" placeholder="First Name*" required><br>
-    <input name="lname" placeholder="Last Name*" required><br>
-    <input name="email" placeholder="Email"><br>
-    <input type="tel" name="phone"
-       pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-       placeholder="Phone: 123-456-789"><br>
-    <input name="username" placeholder="User Name*" required><br>
-    <input name="password" type="password" placeholder="Password*" required><br>
-    &nbsp; &nbsp; * Required<br>
-    <button type="submit">Create Account</button>
-</form>
+<div class="body fixed">
+    <div class="page-holder bg-cover darken">
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <h3><br><br></h3>
+                <!-- <img src="/static/gouda-time-logo.png"> -->
+                <div class="card-transparent">
+                    <article class="card-body">
+                    <h4 class="card-title text-center white">Create an Account</h4>
+                    <hr>
+                    <form action="/register" method="POST">
+                    <div class="form-group form-label-group input-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input name="fname" class="form-control" placeholder="First Name (required)" required>
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input name="lname" class="form-control" placeholder="Last Name (required)" required>
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input name="email" class="form-control" placeholder="Email">
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input name="phone" class="form-control" placeholder="Phone: 123-456-789" type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input name="username" class="form-control" placeholder="User Name (required)" required>
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input name="password" class="form-control" placeholder="Password (required)" type="password" required>
+                        </div> <!-- input-group.// -->
+                    </div> <!-- form-group// -->
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-outline-light"> Create Account </button>
+                    </div> <!-- form-group// -->
+                    <p class="text-center"><a class="link" href="/register" class="btn btn-link">Already Have An Account?</a></p>
+                    </form>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
