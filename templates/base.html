@@ -3,7 +3,7 @@
 <head>
     <title>
     {% block title %}
-    More Thyme
+    Gouda Thyme
     {% endblock %}
     </title>
     <script src="http://code.jquery.com/jquery-3.4.1.js"
@@ -12,23 +12,62 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+    $( document ).ready(function() {
+      $().alert()
+    });
+    </script>
     <style>
       #body {
-        margin-top: 70px;
+        margin-top: 60px;
+      }
+      .navbar-brand {
+          position: relative;
+          width: 50px;
+          left: 15px;
+      }
+
+      .navbar-toggler {
+        font-size:15px;
+      }
+      .navbar-logo {
+        vertical-align: top;
+      }
+      .navbar {
+        list-style-type: none;
+        /* this is what will keep the navbar from stretching */
+        max-height: 60px;
+        margin:0 !important;
+        padding: 0px !important;
+      }
+      .navbar li {
+        display: inline;
+      }
+      .navbar-dark .navbar-nav .nav-link {
+        color: white;
+      }
+      .navbar-nav .nav-item:hover .nav-link {
+      color: #c7cad1;
+      }
+      .flash {
+        margin: 0;
       }
     </style>
     {% block head %}
     {% endblock %}
 </head>
 <body>
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #293240;">
   {% if session.get('user_id') %}
-    <a class="navbar-brand" href="/my-items/{{session['user_id']}}">More Thyme</a>
+    <a class="navbar-brand" href="/my-items/{{session['user_id']}}">
+      <img class="navbar-logo" src="/static/gouda-time-logo.png" width="50" alt="">
+    </a>
   {% else %}
-    <a class="navbar-brand" href="/">More Thyme</a>
+    <a class="navbar-brand" href="/">
+      <img class="navbar-logo" src="/static/gouda-time-logo.png" width="50" alt="">
+    </a>
   {% endif %}
 
-    <!-- TOGGLER DOESNT WORK SINCE NO EVENT LISTENER ON IT YET!! -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -62,6 +101,9 @@
           <li class="nav-item">
           <a class="nav-link" href="/login">Log In</a>
           </li>
+          <li class="nav-item">
+          <a class="nav-link" href="/login">Create Account</a>
+          </li>
         {% endif %}
       </ul>
       </div>
@@ -70,7 +112,12 @@
 
 <div id="body">
   {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">{{ message }}</div>
+    <div class="alert alert-warning alert-dismissible fade show flash" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+      </button>
+      {{ message }}
+    </div>
   {% endfor %}
 
   {% block content %} 
