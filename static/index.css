@@ -1,0 +1,28 @@
+.page-holder {
+  min-height: 100vh;
+}
+
+.bg-cover {
+  background-size: cover !important;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden; 
+}
+.white {
+    color: white;
+}
+div, #update-groceries {
+    text-align: center;
+}
+.submit {
+  padding: 10px;
+}
+
+a {
+  color: #95a3bb;
+}
+a.link {
+  color: #293240;
+} 
