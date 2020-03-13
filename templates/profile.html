@@ -13,10 +13,10 @@
             } else {
                 phone = ""
             }
-            $("#fname").html('<input type="text" id="firstname" value="' + $("#fname").text() + '">');
-            $("#lname").html('<input type="text" id="lastname" value="' + $("#lname").text() + '">');
-            $("#email").html('<input type="text" id="emailadd" value="' + $("#email").text() + '">');
-            $("#phone").html('<input type="tel" id="phonenum" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone: 123-456-789" value="' + phone + '">');
+            $("#fname").html('<input type="text" class="form-control" id="firstname" value="' + $("#fname").text() + '">');
+            $("#lname").html('<input type="text" class="form-control" id="lastname" value="' + $("#lname").text() + '">');
+            $("#email").html('<input type="text" class="form-control" id="emailadd" value="' + $("#email").text() + '">');
+            $("#phone").html('<input type="tel" class="form-control" id="phonenum" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone: 123-456-789" value="' + phone + '">');
         });
         $("#update").on("click", function(){
             const formInputs = {
@@ -35,15 +35,38 @@
         });
     });
 </script>
+<link href="/static/index.css" rel="stylesheet" type="text/css">
+<style>
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/board.jpg);
+    background-attachment: fixed;
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<h3 data-user_id="{{user.user_id}}">Your Profile:</h3>
-<p><b>Username: </b><span id="username">{{ user.username }}</span></p>
-<p><b>First Name: </b><span id="fname">{{ user.fname }}</span></p>
-<p><b>Last Name: </b><span id="lname">{{ user.lname }}</span></p>
-<p><b>Email: </b><span id="email">{{ user.email }}</span></p>
-<p><b>Phone: </b><span id="phone">{{ user.phone }}</span></p>
-<button type="submit" class="profile" id="edit">Edit Profile</button>
-<button type="submit" class="profile" id="update" style="display: none">Update Profile</button>
+<div class="body fixed">
+    <div class="page-holder bg-cover darken">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-3" style="overflow-x:auto;">
+                    <br>
+                    <h3 data-user_id="{{user.user_id}}">Your Profile:</h3>
+                    <p><b>Username: </b><span id="username">{{ user.username }}</span></p>
+                    <p><b>First Name: </b><span id="fname">{{ user.fname }}</span></p>
+                    <p><b>Last Name: </b><span id="lname">{{ user.lname }}</span></p>
+                    <p><b>Email: </b><span id="email">{{ user.email }}</span></p>
+                    <p><b>Phone: </b><span id="phone">{{ user.phone }}</span></p>
+                    <button type="submit" class="profile btn btn-outline-dark" id="edit">Edit Profile</button>
+                    <button type="submit" class="profile btn btn-outline-dark" id="update" style="display: none">Update Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
