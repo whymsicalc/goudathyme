@@ -4,46 +4,95 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link href="../static/table.css" rel="stylesheet">
+<link href="/static/table.css" rel="stylesheet">
+<link href="/static/index.css" rel="stylesheet" type="text/css">
 <style>
-  .items {
+/*.body {
+  margin-top: 60px;
+}*/
+.fixed {
   position: fixed;
 }
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/dough.jpg);
+    background-attachment: fixed;
+}
+
+/*table {display: block;}*/
+/*table.scroll tbody,
+table.scroll thead { display: block; }*/
+table {
+  table-layout: auto;
+  width: 100%;
+  border-radius: 10px;
+}
+tbody {
+    display:block;
+    max-height:400px;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed; /*even columns width , fix width of table too*/
+}
+.thin {
+  width: 10%;
+}
+th, td {
+  color: #1E0B05;
+}
+/*table.scroll tbody {
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden; 
+}*/
 </style>
 {% endblock %}
 
 {% block content %}
-<h1>Hello there, {{user.fname}}!</h1>
-<div class="container-fluid">
-    <div class="row">
+<div class="body fixed">
+<div class="page-holder bg-cover darken">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-6" style="overflow-x:auto;">
+        <h1 class="white">Hello there, {{user.fname}}!</h1>
+      </div>
+    </div>
+    <div class="row justify-content-center">
         <div class="col-8" style="overflow-x:auto;">
-            <h4>This is what you have logged in your kitchen so far:</h4>
+            <h4 class="white">This is what you have logged in your kitchen so far:</h4>
             <form id="update-kitchen" action="/update-kitchen" method="POST">
-              <table>
+              <table class="scroll">
                   <thead>
                       <tr>
                           <th>Ingredient</th>
                           <th>Expiration Date</th>
                           <th>Running Low</th>
                           <th>Notes</th>
-                          <th>Actions</th>
+                          <th class="thin">Actions</th>
                       </tr>
                   </thead>
                   <tbody id="current-ings">
                         {% for item in items %}
                           <tr data-item_id="{{item.item_id}}">
                             {% if item.ingredients.api_id %}
-                              <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
+                              <td><a class="link" href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
                             {% else %}
                               <td>{{item.ingredients.name}}</td>
                             {% endif %}
                             <td>{{item.expiration_date.strftime("%A, %B %d, %Y") if item.expiration_date else "None"}}</td>
                             <td>{{item.running_low}}</td>
                             <td>{{item.notes}}</td>
-                            <td>
-                              <a class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></a>
-                              <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
-                              <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                            <td class="thin">
+                              <a class="add" title="Update" data-toggle="tooltip" data-placement="left"><i class="material-icons">&#xE03B;</i></a>
+                              <a class="edit" title="Edit" data-toggle="tooltip" data-placement="left"><i class="material-icons">&#xE254;</i></a>
+                              <a class="delete" title="Delete" data-toggle="tooltip" data-placement="left"><i class="material-icons">&#xE872;</i></a>
                             </td>
                           </tr>
                         {% endfor %}
@@ -53,20 +102,22 @@
         </div>
 
         <div class="col-4">
-          <div class="items">
-            <h4>What else is in your kitchen?</h4>
+          <div class="fixed">
+            <h4 class="white">What else is in your kitchen?</h4>
             <form id="add-to-kitchen" action="/add-to-kitchen" method="POST">
                 <select class="new-ingredient form-control" name="ingredients" multiple="multiple" id="to-add">
                     {% for ingredient in ingredients %}
                     <option value={{ingredient.ing_id}}>{{ingredient.name}}</option>
                     {% endfor %}
                 </select>
-
-                <button type="submit">Add Ingredient!</button>
+                <div class="submit">
+                  <button type="submit" class="btn btn-outline-light">Add Ingredient!</button>
+                </div>
             </form><br>
           </div>
         </div>
     </div>
+  </div>
 </div>
             <!-- <script src="JAVASCRIPT LOCATION"></script>
              -->
@@ -92,7 +143,7 @@
                       };
                       let name_td = ""
                       if (item.api_id != null) {
-                        name_td = "<td><a href='/ingredient/" + item.api_id + "'>" + item.ingredient_name + "</a></td>"
+                        name_td = "<td><a class='link' href='/ingredient/" + item.api_id + "'>" + item.ingredient_name + "</a></td>"
                       } else {
                         name_td = "<td>" + item.ingredient_name + "</td>"
                       };
@@ -102,10 +153,10 @@
                               <td>${expiration}</td>
                               <td>${low}</td>
                               <td>${notes}</td>
-                              <td>
-                                <a class="add" title="Add" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE03B;</i></a>
-                                <a class="edit" title="Edit" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE254;</i></a>
-                                <a class="delete" title="Delete" data-toggle="tooltip" data-placement="top"><i class="material-icons">&#xE872;</i></a>
+                              <td class="thin">
+                                <a class="add" title="Update" data-toggle="tooltip" data-placement="left"><i class="material-icons">&#xE03B;</i></a>
+                                <a class="edit" title="Edit" data-toggle="tooltip" data-placement="left"><i class="material-icons">&#xE254;</i></a>
+                                <a class="delete" title="Delete" data-toggle="tooltip" data-placement="left"><i class="material-icons">&#xE872;</i></a>
                               </td>
                           </tr>`
                           );
@@ -136,11 +187,7 @@
                       }
                     }
                 });
-                // $('submit').on('click', (evt) => {
               });
-            // $(document).ready(function () {
-            //   $('[data-toggle="tooltip"]').tooltip();
-            // })
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
                 // Edit row on edit button click

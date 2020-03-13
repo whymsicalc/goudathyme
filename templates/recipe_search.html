@@ -27,29 +27,43 @@
             console.log(formInputs);
             $.post('/recipe-search', formInputs, (res) => {
                 console.log(res);
-                $('div.body').html("");
+                $('div.content').html('');
+                let index = 0
                 for (idx in res.results) {
                     console.log(res.results[idx]);
                     const result = res.results[idx];
-                    let diets = ''
+                    let col = '';
+                    if ([0, 3, 6].includes(index)){
+                        col = `<div class="col-3 offset-1" style="overflow-x:auto;">`;
+                    } else {
+                        col = `<div class="col-3" style="overflow-x:auto;">`;
+                    };
+                    index += 1;
+                    let diets = '';
                     if (result['diets'].length != 0){
-                        diets = '<div><b>Diet Matches:</b></div><ul>'
+                        diets = `<div><b>Diet Matches:</b></div><ul>`
                         for (const idx in result['diets']){
                             diets += `<li>${result['diets'][idx]}</li>`
-                            }
-                        diets += '</ul>'
-                        }
-                    let mins = ''
+                            };
+                        diets += '</ul>';
+                        };
+                    let mins = '';
                     if (result['readyInMinutes'] != 0 || result['readyInMinutes'] != null){
                         mins = `<div><b>Minutes to Prepare: </b>${result['readyInMinutes']}</div>`
-                    }
-                    let servings = ''
+                    };
+                    let servings = '';
                     if (result['servings'] != 0 || result['servings'] != null){
                         servings = `<div><b>Servings: </b>${result['servings']}</div><br>`
-                    }
-                    $('div.body').append(`<h3><a href="${result['sourceUrl']}">${result['title']}</a></h3>
-                        <img src="${result['image']}"><br>` + diets + mins + servings)
-                }
+                    };
+                    $('div.content').append(col + `<div class="card border-secondary mb-3"><img src="${result['image']}" alt="${result['title']}" style="width:100%"><div class="container"><h4 class="recipe"><b><a href="${result['sourceUrl']}">${result['title']}</a></b></h4><p class="descriptor></p>` + diets + mins + servings + `</div></div></div>`);
+                    // <h3><a href="${result['sourceUrl']}">${result['title']}</a></h3>
+                    //     <img src="${result['image']}"><br>` + diets + mins + servings)
+                };
+                $('#leftHalf').hide();
+                $('#rightHalf').hide();
+                $(`div.form`).hide();
+                $('div.darken').show();
+                $(`div.results`).show();
                 // $('div.body').append(`<span>More Recipes <button id="more" type="submit">>></button></span>`)
             });
         });
@@ -58,132 +72,212 @@
         $('[data-toggle="popover"]').popover({ trigger: "click" });
     });
 </script>
+<link href="/static/index.css" rel="stylesheet" type="text/css">
 <style>
-    .tooltip-inner {
-        max-width: 600px;
+h1 {
+    padding-top: 20px;
+}
+.results {
+    padding-top: 20px;
+}
+.recipe {
+    padding-top: 10px;
+}
+.tooltip-inner {
+    max-width: 600px;
+}
+.darken {
+    background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/wood.jpg);
+    background-attachment: fixed;
+    position: fixed;
     }
+#leftHalf {
+    background-image: 
+        linear-gradient(
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.05)),
+    url(/static/images/sides-left.jpg);
+    width: 50%;
+    /*position: absolute;*/
+    left: 0px; 
+    /*background-attachment: fixed;*/
+}
+#rightHalf {
+    background-image: 
+        linear-gradient(
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.05)),
+    url(/static/images/sides-right.jpg);
+    width: 50%;
+    position: absolute;
+    right: 0px;
+    /*height: 100%;*/
+    /*background-attachment: fixed;*/
+}
+.fixed {
+    /*position: fixed;*/
+}
+div.form {
+    top: 60px;
+    text-align:center;
+    position:absolute;
+    /*margin: auto;*/
+    margin-left: 23%;
+}
+.recipe {
+    padding-top: 10px;
+}
+.card, img {
+    border-radius: 10px;
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="body">
-<h3>Search for Recipes!</h3>
-<h5>You can filter recipes based on the following criteria:</h5>
-    <form id="find-recipes">
-        <label>Type:
-            <select class="select" id="type" name="type" data-id="{{user_id}}" style="width: 100%">
-              <option value="" disabled selected>Select your option</option>
-              <option value="main course">Main Course</option>
-              <option value="side dish">Side Dish</option>
-              <option value="dessert">Dessert</option>
-              <option value="appetizer">Appetizer</option>
-              <option value="salad">Salad</option>
-              <option value="bread">Bread</option>
-              <option value="breakfast">Breakfast</option>
-              <option value="soup">Soup</option>
-              <option value="beverage">Beverage</option>
-              <option value="sauce">Sauce</option>
-              <option value="marinade">Marinade</option>
-              <option value="fingerfood">Finger Food</option>
-              <option value="snack">Snack</option>
-              <option value="drink">Drink</option>
-            </select>
-        </label><br>
-        <label>Diet:
-            <select class="select" id="diet" name="diet" style="width: 100%">
-                <option value="" disabled selected>Select your option</option>
-                <option value="gluten free">Gluten Free</option>
-                <option value="ketogenic">Ketogenic</option>
-                <option value="vegetarian">Vegetarian</option>
-                <option value="lacto-vegetarian">Lacto-Vegetarian</option>
-                <option value="ovo-vegetarian">Ovo-Vegetarian</option>
-                <option value="vegan">Vegan</option>
-                <option value="pescetarian">Pescetarian</option>
-                <option value="paleo">Paleo</option>
-                <option value="primal">Primal</option>
-                <option value="whole30">Whole30</option>
-            </select>
-            </label><span class="question" data-html="true" title="<b>Gluten Free: </b>No wheat, barley, rye, and other gluten-containing grains and foods made from them (or that may have been cross contaminated).<br><br>
-            <b>Ketogenic: </b>
-            The keto diet is based more on the ratio of fat, protein, and carbs in the diet rather than specific ingredients. Generally, high fat, protein-rich foods are acceptable and high carbohydrate foods are not.<br><br>
-            <b>Vegetarian: </b>
-            No ingredients may contain meat or meat by-products, such as bones or gelatin.<br><br>
-            <b>Lacto-Vegetarian: </b>
-            All ingredients must be vegetarian and none of the ingredients can contain egg.<br><br>
-            <b>Ovo-Vegetarian: </b>
-            All ingredients must be vegetarian and none of the ingredients can contain dairy.<br><br>
-            <b>Vegan: </b>
-            No ingredients may contain meat or meat by-products, such as bones or gelatin, nor may they contain eggs, dairy, or honey.<br><br>
-            <b>Pescetarian: </b>
-            Everything is allowed except meat and meat by-products - some pescetarians eat eggs and dairy, some do not.<br><br>
-            <b>Paleo: </b>
-            Allowed ingredients include meat, fish, eggs, vegetables, some oils (e.g. coconut and olive oil), and in smaller quantities, fruit, nuts, and sweet potatoes. Also allowed are honey and maple syrup (popular in Paleo desserts, but strict Paleo followers may disagree). Ingredients not allowed include legumes (e.g. beans and lentils), grains, dairy, refined sugar, and processed foods.<br><br>
-            <b>Primal: </b>
-            Very similar to Paleo, except dairy is allowed - raw and full fat milk, butter, ghee, etc.<br><br>
-            <b>Whole30: </b>
-            Allowed ingredients include meat, fish/seafood, eggs, vegetables, fresh fruit, coconut oil, olive oil, small amounts of dried fruit and nuts/seeds. Ingredients not allowed include added sweeteners (natural and artificial, except small amounts of fruit juice), dairy (except clarified butter or ghee), alcohol, grains, legumes (except green beans, sugar snap peas, and snow peas), and food additives, such as carrageenan, MSG, and sulfites." data-toggle="popover" data-placement="right">&nbsp;&nbsp;<img src="https://img.icons8.com/material-outlined/20/000000/help.png"></span><br>
-        <label>Cuisine:
-            <select class="select" id="cuisine" name="cuisine" style="width: 100%">
-                <option value="" disabled selected>Select your option</option>
-                <option value="African">African</option>
-                <option value="American">American</option>
-                <option value="British">British</option>
-                <option value="Cajun">Cajun</option>
-                <option value="Caribbean">Caribbean</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Eastern European">Eastern European</option>
-                <option value="European">European</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Greek">Greek</option>
-                <option value="Indian">Indian</option>
-                <option value="Irish">Irish</option>
-                <option value="Italian">Italian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Jewish">Jewish</option>
-                <option value="Korean">Korean</option>
-                <option value="Latin American">Latin American</option>
-                <option value="Mediterranean">Mediterranean</option>
-                <option value="Mexican">Mexican</option>
-                <option value="Middle Eastern">Middle Eastern</option>
-                <option value="Nordic">Nordic</option>
-                <option value="Southern">Southern</option>
-                <option value="Spanish">Spanish</option>
-                <option value="Thai">Thai</option>
-                <option value="Vietnamese">Vietnamese</option>
-            </select>
-        </label><br>
-        <label>Allergies:
-            <select class="select allergies" id="intolerances" name="intolerances" multiple="multiple" style="width: 100%">
-                <option value="Dairy">Dairy</option>
-                <option value="Egg">Egg</option>
-                <option value="Gluten">Gluten</option>
-                <option value="Grain">Grain</option>
-                <option value="Peanut">Peanut</option>
-                <option value="Seafood">Seafood</option>
-                <option value="Sesame">Sesame</option>
-                <option value="Shellfish">Shellfish</option>
-                <option value="Soy">Soy</option>
-                <option value="Sulfite">Sulfite</option>
-                <option value="Tree Nut">Tree Nut</option>
-                <option value="Wheat">Wheat</option>
-            </select>
-        </label><br>
-        <label>Maximum Prep & Cook Time:<br>
-            <input type="number" id="maxReadyTime">
-        </label><br>
-        <label>Sort By:
-            <select class="select" id="sort" name="sort" style="width: 100%">
-                <option value="" disabled selected>Select your option</option>
-                <option value="calories">Calories</option>
-                <option value="carbohydrates">Carbohydrates</option>
-                <option value="healthiness">Healthiness</option>
-                <option value="price">Price</option>
-                <option value="protein">Protein</option>
-                <option value="time">Time</option>
-            </select>
-        </label><br>
-        <button type="submit">Search Recipes!</button>
-    </form>
+<div class="background">
+    <div class="page-holder bg-cover darken" style="display: none;"></div>
+    <div class="page-holder bg-cover fixed" id="leftHalf">
+    <div class="page-holder bg-cover fixed" id="rightHalf">
+    </div>
+    </div>
+</div>
+<div class="form">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-8" style="overflow-x:auto;">
+                <h3 class="white">Search for Recipes!</h3>
+                <h5 class="white">You can filter recipes based on the following criteria:</h5>
+            </div>
+            <div class="col-6" style="overflow-x:auto;">
+                    <form id="find-recipes">
+                        <label class="white">Type:
+                            <select class="select" id="type" name="type" data-id="{{user_id}}" style="width: 100%">
+                              <option value="" disabled selected>Select your option</option>
+                              <option value="main course">Main Course</option>
+                              <option value="side dish">Side Dish</option>
+                              <option value="dessert">Dessert</option>
+                              <option value="appetizer">Appetizer</option>
+                              <option value="salad">Salad</option>
+                              <option value="bread">Bread</option>
+                              <option value="breakfast">Breakfast</option>
+                              <option value="soup">Soup</option>
+                              <option value="beverage">Beverage</option>
+                              <option value="sauce">Sauce</option>
+                              <option value="marinade">Marinade</option>
+                              <option value="fingerfood">Finger Food</option>
+                              <option value="snack">Snack</option>
+                              <option value="drink">Drink</option>
+                            </select>
+                        </label><br>
+                        <label class="white">Diet:
+                            <select class="select" id="diet" name="diet" style="width: 100%">
+                                <option value="" disabled selected>Select your option</option>
+                                <option value="gluten free">Gluten Free</option>
+                                <option value="ketogenic">Ketogenic</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="lacto-vegetarian">Lacto-Vegetarian</option>
+                                <option value="ovo-vegetarian">Ovo-Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                                <option value="pescetarian">Pescetarian</option>
+                                <option value="paleo">Paleo</option>
+                                <option value="primal">Primal</option>
+                                <option value="whole30">Whole30</option>
+                            </select>
+                            </label><span class="question" data-html="true" title="<b>Gluten Free: </b>No wheat, barley, rye, and other gluten-containing grains and foods made from them (or that may have been cross contaminated).<br><br>
+                            <b>Ketogenic: </b>
+                            The keto diet is based more on the ratio of fat, protein, and carbs in the diet rather than specific ingredients. Generally, high fat, protein-rich foods are acceptable and high carbohydrate foods are not.<br><br>
+                            <b>Vegetarian: </b>
+                            No ingredients may contain meat or meat by-products, such as bones or gelatin.<br><br>
+                            <b>Lacto-Vegetarian: </b>
+                            All ingredients must be vegetarian and none of the ingredients can contain egg.<br><br>
+                            <b>Ovo-Vegetarian: </b>
+                            All ingredients must be vegetarian and none of the ingredients can contain dairy.<br><br>
+                            <b>Vegan: </b>
+                            No ingredients may contain meat or meat by-products, such as bones or gelatin, nor may they contain eggs, dairy, or honey.<br><br>
+                            <b>Pescetarian: </b>
+                            Everything is allowed except meat and meat by-products - some pescetarians eat eggs and dairy, some do not.<br><br>
+                            <b>Paleo: </b>
+                            Allowed ingredients include meat, fish, eggs, vegetables, some oils (e.g. coconut and olive oil), and in smaller quantities, fruit, nuts, and sweet potatoes. Also allowed are honey and maple syrup (popular in Paleo desserts, but strict Paleo followers may disagree). Ingredients not allowed include legumes (e.g. beans and lentils), grains, dairy, refined sugar, and processed foods.<br><br>
+                            <b>Primal: </b>
+                            Very similar to Paleo, except dairy is allowed - raw and full fat milk, butter, ghee, etc.<br><br>
+                            <b>Whole30: </b>
+                            Allowed ingredients include meat, fish/seafood, eggs, vegetables, fresh fruit, coconut oil, olive oil, small amounts of dried fruit and nuts/seeds. Ingredients not allowed include added sweeteners (natural and artificial, except small amounts of fruit juice), dairy (except clarified butter or ghee), alcohol, grains, legumes (except green beans, sugar snap peas, and snow peas), and food additives, such as carrageenan, MSG, and sulfites." data-toggle="popover" data-placement="right">&nbsp;&nbsp;<img src="https://img.icons8.com/material-outlined/20/000000/help.png"></span><br>
+                        <label class="white">Cuisine:
+                            <select class="select" id="cuisine" name="cuisine" style="width: 100%">
+                                <option value="" disabled selected>Select your option</option>
+                                <option value="African">African</option>
+                                <option value="American">American</option>
+                                <option value="British">British</option>
+                                <option value="Cajun">Cajun</option>
+                                <option value="Caribbean">Caribbean</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Eastern European">Eastern European</option>
+                                <option value="European">European</option>
+                                <option value="French">French</option>
+                                <option value="German">German</option>
+                                <option value="Greek">Greek</option>
+                                <option value="Indian">Indian</option>
+                                <option value="Irish">Irish</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Jewish">Jewish</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Latin American">Latin American</option>
+                                <option value="Mediterranean">Mediterranean</option>
+                                <option value="Mexican">Mexican</option>
+                                <option value="Middle Eastern">Middle Eastern</option>
+                                <option value="Nordic">Nordic</option>
+                                <option value="Southern">Southern</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="Thai">Thai</option>
+                                <option value="Vietnamese">Vietnamese</option>
+                            </select>
+                        </label><br>
+                        <label class="white">Allergies:
+                            <select class="select allergies" id="intolerances" name="intolerances" multiple="multiple" style="width: 100%">
+                                <option value="Dairy">Dairy</option>
+                                <option value="Egg">Egg</option>
+                                <option value="Gluten">Gluten</option>
+                                <option value="Grain">Grain</option>
+                                <option value="Peanut">Peanut</option>
+                                <option value="Seafood">Seafood</option>
+                                <option value="Sesame">Sesame</option>
+                                <option value="Shellfish">Shellfish</option>
+                                <option value="Soy">Soy</option>
+                                <option value="Sulfite">Sulfite</option>
+                                <option value="Tree Nut">Tree Nut</option>
+                                <option value="Wheat">Wheat</option>
+                            </select>
+                        </label><br>
+                        <label class="white">Maximum Prep & Cook Time:<br>
+                            <input type="number" id="maxReadyTime">
+                        </label><br>
+                        <label class="white">Sort By:
+                            <select class="select" id="sort" name="sort" style="width: 100%">
+                                <option value="" disabled selected>Select your option</option>
+                                <option value="calories">Calories</option>
+                                <option value="carbohydrates">Carbohydrates</option>
+                                <option value="healthiness">Healthiness</option>
+                                <option value="price">Price</option>
+                                <option value="protein">Protein</option>
+                                <option value="time">Time</option>
+                            </select>
+                        </label><br>
+                        <button type="submit" class="btn btn-outline-light">Search Recipes!</button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="results" style="display: none;">
+    <div class="container-fluid">
+        <div class="row justify-content-center content">
+        </div>
+    </div>
 </div>
 {% endblock %}
