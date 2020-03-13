@@ -353,17 +353,38 @@ def show_recipe_search(user_id):
 @app.route("/recipe-search", methods=["POST"])
 def search_recipes():
     """Search for recipes based on given criteria."""
+    payload = {
+        # 'includeIngredients': ingredients,
+        'instructionsRequired': 'true',
+        'fillIngredients': 'true',
+        'addRecipeInformation': 'true',
+        'number': 9,
+        # 'offset': offset
+        }
     user_id = request.form.get("user_id")
+    if user_id:
+        payload["user_id"] = user_id
     food_type = request.form.get("type")
+    if food_type:
+        payload["type"] = food_type
     diet = request.form.get("diet")
+    if diet:
+        payload["diet"] = diet
     cuisine = request.form.get("cuisine")
+    if cuisine:
+        payload["cuisine"] = cuisine
     intolerances_list = request.form.getlist("intolerances[]")
     intolerances = ",".join(intolerances_list)
+    if intolerances:
+        payload["intolerances"] = intolerances
     maxReadyTime = request.form.get("maxReadyTime")
+    if maxReadyTime:
+        payload["maxReadyTime"] = maxReadyTime
     sort = request.form.get("sort")
+    if sort:
+        payload["sort"] = sort
     # can use to paginate results
     # offset = request.form.get("offset")
-
     user = User.query.get(user_id)
     items = Item.query.filter(Item.user_id==user_id).all()
     # can set ingredients to search by ingredients
@@ -374,19 +395,8 @@ def search_recipes():
     # ingredients = ",".join(ingredient_names)
 
     url = "https://api.spoonacular.com/recipes/complexSearch"
-    payload = {
-        # 'includeIngredients': ingredients,
-        'cuisine': cuisine,
-        'diet': diet,
-        'type': food_type,
-        'intolerances': intolerances,
-        'maxReadyTime': maxReadyTime,
-        'instructionsRequired': 'true',
-        'fillIngredients': 'true',
-        'addRecipeInformation': 'true',
-        'sort': sort,
-        # 'offset': offset
-        }
+    payload.update({'apiKey': APIKEY})
+    response = requests.get(url, params=payload)
     data = get_json(url, payload)
     return data
 
