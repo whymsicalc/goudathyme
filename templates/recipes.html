@@ -1,70 +1,67 @@
 {% extends 'base.html' %}
 
 {% block head %}
+<link href="/static/index.css" rel="stylesheet" type="text/css">
+<style>
+    .darken {
+    background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/wood.jpg);
+    background-attachment: fixed;
+    }
+    h1 {
+        padding-top: 20px;
+    }
+    .recipe {
+        padding-top: 10px;
+    }
+    .card, img {
+        border-radius: 10px;
+    }
+</style>
 {% endblock %}
 
 
 {% block content %}
-<h1>Here's what you can cook with what you have in your kitchen:</h1>
-<br>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-4" style="overflow-x:auto;">
-            {% for recipe in data[:6] %}
-                <h3><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></h3>
-                <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
-                <h5 class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></h5>
-                <h4>Missing Ingredients for this Recipe:</h4>
-                <ul>
-                {% for item in recipe['missedIngredients'] %}
-                    <li>{{item['name']}}</li>
+<div class="body fixed">
+    <div class="page-holder bg-cover darken">
+        <h1 class="white">Here's what you can cook with what you have in your kitchen:</h1>
+        <br>
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                {% for recipes in [data[:6], data[6:12], data[12:]] %}
+                <div class="col-3" style="overflow-x:auto;">
+                    {% for recipe in recipes %}
+                    <div class="card border-secondary mb-3">
+                      <img src="{{recipe['image']}}" alt="{{recipe['title']}}" style="width:100%">
+                      <div class="container">
+                        <h4 class="recipe"><b><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></b></h4>
+                        <p class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></p>
+                        {% if recipe['missedIngredients'] %}
+                            <b>Missing Ingredients for this Recipe:</b>
+                            <ul>
+                            {% for item in recipe['missedIngredients'] %}
+                                <li>{{item['name']}}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if recipe['usedIngredients'] %}
+                            <b>Ingredients Included in this Recipe:</b>
+                            <ul>
+                            {% for item in recipe['usedIngredients'] %}
+                                <li>{{item['name']}}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                      </div>
+                    </div><br>
+                    {% endfor %}
+                </div>
                 {% endfor %}
-                </ul>
-                <h4>Ingredients Included in this Recipe:</h4>
-                <ul>
-                {% for item in recipe['usedIngredients'] %}
-                    <li>{{item['name']}}</li>
-                {% endfor %}
-                </ul>
-            {% endfor %}
-        </div>
-        <div class="col-4" style="overflow-x:auto;">
-            {% for recipe in data[6:12] %}
-                <h3><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></h3>
-                <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
-                <h5 class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></h5>
-                <h4>Missing Ingredients for this Recipe:</h4>
-                <ul>
-                {% for item in recipe['missedIngredients'] %}
-                    <li>{{item['name']}}</li>
-                {% endfor %}
-                </ul>
-                <h4>Ingredients Included in this Recipe:</h4>
-                <ul>
-                {% for item in recipe['usedIngredients'] %}
-                    <li>{{item['name']}}</li>
-                {% endfor %}
-                </ul>
-            {% endfor %}
-        </div>
-        <div class="col-4" style="overflow-x:auto;">
-            {% for recipe in data[12:] %}
-                <h3><a href="/original/{{recipe['id']}}">{{recipe['title']}}</a></h3>
-                <img src="{{recipe['image']}}" alt="{{recipe['title']}}"><br>
-                <h5 class="descriptor" data-id="{{recipe['id']}}" data-api="{{apiKey}}"></h5>
-                <h4>Missing Ingredients for this Recipe:</h4>
-                <ul>
-                {% for item in recipe['missedIngredients'] %}
-                    <li>{{item['name']}}</li>
-                {% endfor %}
-                </ul>
-                <h4>Ingredients Included in this Recipe:</h4>
-                <ul>
-                {% for item in recipe['usedIngredients'] %}
-                    <li>{{item['name']}}</li>
-                {% endfor %}
-                </ul>
-            {% endfor %}
+            </div>
         </div>
     </div>
 </div>
