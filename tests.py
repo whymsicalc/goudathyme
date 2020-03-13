@@ -58,10 +58,10 @@ class FlaskTestsBasic(TestCase):
         app.config['TESTING'] = True
 
     def test_index(self):
-        """Test homepage page."""
+        """Test homepage."""
 
         result = self.client.get("/")
-        self.assertIn(b"Welcome to More Thyme", result.data)
+        self.assertIn(b"Hello! Welcome to <br>Gouda Thyme!</h1><br>", result.data)
 
     def test_registration(self):
         """Test registration page."""
@@ -96,7 +96,7 @@ class FlaskTestsDatabase(TestCase):
         result = self.client.post("/login",
                                   data={"username": "janedoe", "password": "abc"},
                                   follow_redirects=True)
-        self.assertIn(b"Sign In", result.data)
+        self.assertIn(b'<h4 class="card-title text-center white">Sign in</h4>', result.data)
 
     def test_login_without_account(self):
         """Test login without an account."""
@@ -155,7 +155,7 @@ class FlaskTestsLoggedOut(TestCase):
 
         result = self.client.get("/my-items/1", follow_redirects=True)
         self.assertNotIn(b"Hello there", result.data)
-        self.assertIn(b"Sign In", result.data)
+        self.assertIn(b'<h4 class="card-title text-center white">Sign in</h4>', result.data)
 
 
 @use_db('postgres:///testdb', db, app)
@@ -194,7 +194,7 @@ class FlaskTestsLogInLogOut(TestCase):
             result = self.client.get('/logout', follow_redirects=True)
 
             self.assertNotIn(b'user_id', session)
-            self.assertIn(b'Welcome to More Thyme', result.data)
+            self.assertIn(b'Hello! Welcome to <br>Gouda Thyme!</h1><br>', result.data)
 
 
 if __name__ == "__main__":
