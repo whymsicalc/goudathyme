@@ -2,41 +2,87 @@
 
 {% block head %}
 <link href="../static/table.css" rel="stylesheet">
+<link href="/static/index.css" rel="stylesheet" type="text/css">
+<style>
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/chalkboard.jpg);
+    background-attachment: fixed;
+}
+.groceries {
+    height: 200px;
+    width: 400px;
+
+    position: fixed;
+    top: 50%;
+    left: 10%;
+    margin-top: -100px;
+    /*margin-left: -200px;*/
+}
+table.center {
+    margin-left:auto; 
+    margin-right:auto;
+}
+table {
+    border-radius: 5px;
+}
+</style>
 {% endblock %}
 
 
 {% block content %}
+<div class="page-holder bg-cover darken">
 {% if low_ingredients %}
-<h3>Grocery List:</h3>
-    <form id="update-groceries">
-        <table>
-            <thead>
-                <tr>
-                    <th>Ingredient</th>
-                    <th>Running Low</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in low_ingredients %}
-                    <tr>
-                        {% if item.ingredients.api_id %}
-                          <td><a href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
-                        {% else %}
-                          <td>{{item.ingredients.name}}</td>
-                        {% endif %}
-                        <td style="text-align:center;">
-                            <input type="checkbox" name="ids" value="{{item.item_id}}" checked>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit" id="update">Update Kitchen</button>
-    </form>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6" style="overflow-x:auto;">
+            <div class="groceries">
+                <h3 class="white">Grocery List:</h3>
+                <form id="update-groceries">
+                    <table class="center">
+                        <thead>
+                            <tr>
+                                <th>Ingredient</th>
+                                <th>Running Low</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in low_ingredients %}
+                                <tr>
+                                    {% if item.ingredients.api_id %}
+                                      <td><a class="link" href="/ingredient/{{item.ingredients.api_id}}">{{item.ingredients.name}}</a></td>
+                                    {% else %}
+                                      <td>{{item.ingredients.name}}</td>
+                                    {% endif %}
+                                    <td style="text-align:center;">
+                                        <input type="checkbox" name="ids" value="{{item.item_id}}" checked>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="submit">
+                        <button type="submit" id="update" class="btn btn-outline-light">Update Kitchen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% else %}
-<br><h4>You don't have anything logged as running low!</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6" style="overflow-x:auto;">
+            <div class="groceries">
+                <h3 class="white">You don't have anything logged as running low!</h3>
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}
-
 
 <script>
     $(document).ready(function(){
@@ -58,5 +104,4 @@
         });
     });
 </script>
-
 {% endblock %}
