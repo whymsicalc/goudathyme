@@ -318,15 +318,15 @@ def update_running_low():
     return jsonify([])
 
 
-@app.route("/shopping-list/<int:user_id>")
-def show_shopping_list(user_id):
+@app.route("/grocery-list/<int:user_id>")
+def show_grocery_list(user_id):
     """Show list of items that user has marked as running low."""
     logged_in = check_logged_in()
     if logged_in:
         return logged_in
     user = User.query.get(user_id)
     low_ingredients = Item.query.filter_by(user_id=user_id, running_low=True).all()
-    return render_template("shopping_list.html", user=user, low_ingredients=low_ingredients)
+    return render_template("grocery_list.html", user=user, low_ingredients=low_ingredients)
 
 
 @app.route("/ingredient/<int:api_id>")

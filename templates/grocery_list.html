@@ -3,34 +3,7 @@
 {% block head %}
 <link href="../static/table.css" rel="stylesheet">
 <link href="/static/index.css" rel="stylesheet" type="text/css">
-<style>
-.darken {
-  background-image: 
-    linear-gradient(
-      rgba(0, 0, 0, 0.2),
-      rgba(0, 0, 0, 0.2)
-    ),
-    url(/static/images/chalkboard.jpg);
-    background-attachment: fixed;
-}
-.groceries {
-    height: 200px;
-    width: 400px;
-
-    position: fixed;
-    top: 50%;
-    left: 10%;
-    margin-top: -100px;
-    /*margin-left: -200px;*/
-}
-table.center {
-    margin-left:auto; 
-    margin-right:auto;
-}
-table {
-    border-radius: 5px;
-}
-</style>
+<link href="/static/groceries.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 
@@ -84,24 +57,6 @@ table {
 </div>
 {% endif %}
 
-<script>
-    $(document).ready(function(){
-        $('#update-groceries').on('submit', (evt) => {
-            evt.preventDefault();
-            const inputs = [];
-            $.each($("input[name='ids']:not(:checked)"), function(){
-                inputs.push($(this).val());
-            });
-            const formInputs = {
-                'item_ids': inputs
-            }
-            console.log(formInputs);
-            $.post('/update-groceries', formInputs, (res) => {
-                $("input[name='ids']:not(:checked)").each( function(){
-                $(this).parents("tr").remove();
-                });
-            });
-        });
-    });
-</script>
+<script src="/static/groceries.js"></script>
+
 {% endblock %}

@@ -1,0 +1,26 @@
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/chalkboard.jpg);
+    background-attachment: fixed;
+}
+.groceries {
+    height: 200px;
+    width: 400px;
+
+    position: fixed;
+    top: 50%;
+    left: 10%;
+    margin-top: -100px;
+    /*margin-left: -200px;*/
+}
+table.center {
+    margin-left:auto; 
+    margin-right:auto;
+}
+table {
+    border-radius: 5px;
+}
