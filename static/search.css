@@ -1,0 +1,64 @@
+h1 {
+    padding-top: 20px;
+}
+.results {
+    padding-top: 20px;
+}
+.recipe {
+    padding-top: 10px;
+}
+.tooltip-inner {
+    max-width: 600px;
+}
+.darken {
+    background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/wood.jpg);
+    background-attachment: fixed;
+    position: fixed;
+    }
+#leftHalf {
+    background-image: 
+        linear-gradient(
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.05)),
+    url(/static/images/sides-left.jpg);
+    width: 50%;
+    /*position: absolute;*/
+    left: 0px; 
+    /*background-attachment: fixed;*/
+}
+#rightHalf {
+    background-image: 
+        linear-gradient(
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.05)),
+    url(/static/images/sides-right.jpg);
+    width: 50%;
+    position: absolute;
+    right: 0px;
+    /*height: 100%;*/
+    /*background-attachment: fixed;*/
+}
+.fixed {
+    /*position: fixed;*/
+}
+div.form {
+    top: 60px;
+    text-align:center;
+    position:absolute;
+    /*margin: auto;*/
+    margin-left: 23%;
+}
+.recipe {
+    padding-top: 10px;
+}
+.card, img {
+    border-radius: 10px;
+}
+.select2-selection__choice {
+    color: black;
+}
