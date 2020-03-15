@@ -1,0 +1,18 @@
+.darken {
+background-image: 
+linear-gradient(
+  rgba(0, 0, 0, 0.2),
+  rgba(0, 0, 0, 0.2)
+),
+url(/static/images/wood.jpg);
+background-attachment: fixed;
+}
+h1 {
+    padding-top: 20px;
+}
+.recipe {
+    padding-top: 10px;
+}
+.card, img {
+    border-radius: 10px;
+}
