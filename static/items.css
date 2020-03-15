@@ -1,0 +1,36 @@
+/*.body {
+  margin-top: 60px;
+}*/
+.fixed {
+  position: fixed;
+}
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),
+    url(/static/images/dough.jpg);
+    background-attachment: fixed;
+}
+table {
+  table-layout: auto;
+  width: 100%;
+  border-radius: 10px;
+}
+tbody {
+    display:block;
+    max-height:400px;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed; /*even columns width , fix width of table too*/
+}
+.thin {
+  width: 10%;
+}
+th, td {
+  color: #1E0B05;
+}

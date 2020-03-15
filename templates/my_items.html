@@ -6,53 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link href="/static/table.css" rel="stylesheet">
 <link href="/static/index.css" rel="stylesheet" type="text/css">
-<style>
-/*.body {
-  margin-top: 60px;
-}*/
-.fixed {
-  position: fixed;
-}
-.darken {
-  background-image: 
-    linear-gradient(
-      rgba(0, 0, 0, 0.2),
-      rgba(0, 0, 0, 0.2)
-    ),
-    url(/static/images/dough.jpg);
-    background-attachment: fixed;
-}
-
-/*table {display: block;}*/
-/*table.scroll tbody,
-table.scroll thead { display: block; }*/
-table {
-  table-layout: auto;
-  width: 100%;
-  border-radius: 10px;
-}
-tbody {
-    display:block;
-    max-height:400px;
-    overflow:auto;
-}
-thead, tbody tr {
-    display:table;
-    width:100%;
-    table-layout:fixed; /*even columns width , fix width of table too*/
-}
-.thin {
-  width: 10%;
-}
-th, td {
-  color: #1E0B05;
-}
-/*table.scroll tbody {
-  height: 400px;
-  overflow-y: auto;
-  overflow-x: hidden; 
-}*/
-</style>
+<link href="/static/items.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block content %}
