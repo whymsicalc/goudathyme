@@ -1,12 +1,14 @@
 # ![Gouda Thyme Logo](https://github.com/whymsicalc/goudathyme/blob/master/static/images/gouda-time-logo-dark.png "Gouda Thyme")
 
-Gouda Thyme is a full stack web app, built during Hackbright's Project Season that allows users to track items in their kitchen, receive text updates when an item is about to expire, create a grocery list based on ingredients user is low on, find recipes based on items in their kitchen, and search for recipes based on their search criteria (e.g. dietary restrictions, cuisine, prep time).
+Gouda Thyme is a full stack web app, built during Hackbright's Project Season that allows users to track items in their kitchen, receive text updates when an item is about to expire, create a grocery list based on ingredients user is low on, find recipes based on items in their kitchen, and search for recipes based on selected search criteria (e.g. dietary restrictions, cuisine, prep time).
 
 ### Contents
 
 * [Technologies](#techstack)
 * [Installation](#installation)
 * [Features](#features)
+* [Upcoming Features](#futurefeatures)
+* [About The Developer](#aboutme)
 
 ## <a name="techstack"></a>Technologies
 
@@ -102,3 +104,11 @@ Users can search for recipes based on search criteria they choose.
 ![Recipe Search](https://github.com/whymsicalc/goudathyme/blob/master/static/images/readme_recipe_search.gif)
 <br>
 
+## <a name="futurefeatures"></a>Upcoming Features
+
+* Update Recipe Search: Spoonacular said they would update their complex search endpoint to have an option to search and filter recipes using all the ingredients a user has in their kitchen. Once the endpoint is added, I plan to update the "Search Recipes" page to utilize it.
+* Update Twilio Integration: I only registered for a trial Twilio account. I need to update my account to send texts to all users who register. 
+
+## <a name="aboutme"></a>About the Developer
+
+Amber Chan graduated from UC Berkeley with a degree in Psychology with numerous HR related courses under her belt. She wanted to eventually work within a team where she could help add to, build, and shape company culture to improve employee performance and happiness. In her last job at a tech startup, she had the opportunity to provide feature feedback to product managers and engineers. She wanted to be a part of that process and to build and create great user experiences. Through Hackbright, she’s grown to enjoy the puzzle piecing aspect and challenge of programming even more than she has before. She is excited to learn and develop her skills even further after Hackbright. Gouda Thyme is her first full stack project. She can be found on [LinkedIn](https://www.linkedin.com/in/amber-chan-38634396/) and on [Github](https://github.com/whymsicalc/).
