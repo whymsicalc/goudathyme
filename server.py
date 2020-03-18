@@ -20,10 +20,10 @@ app = Flask(__name__)
 SECRET_KEY = os.environ['SECRET_KEY']
 APIKEY = os.environ['APIKEY']
 app.secret_key = SECRET_KEY
-app.debug = True
-app.jinja_env.auto_reload = app.debug
+# app.debug = True
+# app.jinja_env.auto_reload = app.debug
 # DebugToolbar wasn't functioning correctly, so added this line to fix.
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 app.jinja_env.undefined = StrictUndefined
 
@@ -90,7 +90,7 @@ def setup_app():
     if not app.config["TESTING"]:
         connect_to_db(app)
         # Use the DebugToolbar
-        DebugToolbarExtension(app)
+        # DebugToolbarExtension(app)
         # At the same time every day (UTC time), do send_texts()
         schedule.every().day.at("23:00").do(send_texts)
         # Print statement for debugging/to see when setup_app() gets run
